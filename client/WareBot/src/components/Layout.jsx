@@ -32,20 +32,20 @@ const Layout = ({ children }) => {
 
     return (
         <div className='flex'>
-            <div className='w-16 md:w-72 fixed left-0 top-0 z-10 h-screen border border-[#667A8A] pt-8 px-4 bg-[#031C30]'>
+            <div className='w-16 md:w-72 fixed left-0 top-0 z-10 h-screen border border-[#667A8A] pt-6 px-4 bg-[#031C30]'>
                 {/* Logo */}
-                <div className='flex mb-12'>
+                <div className='flex mb-10'>
                     <img src='/vite.svg' alt='logo' className='w-10 hidden md:flex pr-4' />
                     <img src='/vite.svg' alt='logo' className='w-8 flex md:hidden' />
                     <h3 className='text-white font-medium hidden md:block text-xl'>Warebot</h3>
                 </div>
 
                 {/* Sidebar Links */}
-                <ul className='mt-6 space-y-3 cursor-pointer'>
+                <ul className='mt-6 space-y-2 cursor-pointer'>
                     {
                         SidebarLinks.map((link, index) => (
                             <li key={index} 
-                                className={`text-white font-medium rounded-sm py-3 px-5 hover:bg-[#667A8A] ${activeLink === index ? 'bg-[#667A8A]' : ''}`}
+                                className={`text-white font-medium rounded-sm py-2 px-5 hover:bg-[#667A8A] ${activeLink === index ? 'bg-[#667A8A]' : ''}`}
                                 onClick={() => handleLinkClick(index, link.path, link.name)}
                             >
                                 <div className='flex justify-center md:justify-start items-center md:space-x-5'>
@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
                 </ul>
 
                 <div className='text-white w-full absolute bottom-5 left-0 px-4 py-2 cursor-pointer text-center'>
-                    <p className='flex justify-center md:justify-start font-medium rounded-sm py-3 px-5 bg-[#667A8A]'>
+                    <p className='flex justify-center md:justify-start font-medium rounded-sm py-2 px-5 bg-[#667A8A]'>
                         <span><IoLogOut className='text-2xl' /></span>
                         <span className='text-sm text-white hidden md:flex px-4'>Logout</span>
                     </p>
@@ -67,7 +67,7 @@ const Layout = ({ children }) => {
 
             <div className='w-full ml-16 md:ml-72'>
                 <div className='w-full fixed top-0 z-20 bg-[#031C30] border-b border-t border-[#667A8A]'>
-                    <div className='flex justify-between items-center p-6 px-6 text-white'>
+                    <div className='flex justify-between items-center p-5 px-6 text-white'>
                         {/* Left side - Active Link Name */}
                         <h1 className="text-xl font-semibold">{activeLinkName}</h1>
 
