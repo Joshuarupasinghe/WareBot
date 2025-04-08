@@ -8,6 +8,7 @@ import QRPage from './pages/QrGenerator';
 import InventoryManagement from './components/InventoryManagement';
 import ExpirationAlert from './components/ExpirationAlert';
 import OverstockAlert from './components/OverstockAlert';
+import StockMovementComponent from './components/mostInOutstocks';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route path='/expirationalert' element={<ExpirationAlert />} />
         
         <Route path='/overstockalert' element={<OverstockAlert />} />
+        <Route path='/most-in-out-stocks' element={<StockMovementComponent />} />
 
         
       </Routes>

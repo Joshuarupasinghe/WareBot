@@ -7,6 +7,7 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
 import { FaTruckLoading } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
+import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
 
 const Layout = ({ children }) => {
   const [activeLink, setActiveLink] = useState(0);
@@ -23,11 +24,12 @@ const Layout = ({ children }) => {
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 5, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 6, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 7, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 8, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer }, 
+    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
+    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
+    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (
