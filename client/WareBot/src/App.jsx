@@ -10,6 +10,7 @@ import ExpirationAlert from './components/ExpirationAlert';
 import OverstockAlert from './components/OverstockAlert';
 import StockMovementComponent from './components/mostInOutstocks';
 import RobotStatus from './pages/RobotStatus';
+import SettingsAndConfiguration from './pages/settings&configuration';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path='/overstockalert' element={<OverstockAlert />} />
         <Route path='/most-in-out-stocks' element={<StockMovementComponent />} />
         <Route path='/status&tasks' element={<RobotStatus />} />
+        <Route path='/settings&configuration' element={<SettingsAndConfiguration />} />
       </Route>
 
     {/*Pages without layout*/}
