@@ -4,7 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 
 import QRPage from './pages/QrGenerator';
-
+import SignIn from './pages/SignIn';
 import InventoryManagement from './components/InventoryManagement';
 import ExpirationAlert from './components/ExpirationAlert';
 import OverstockAlert from './components/OverstockAlert';
@@ -19,6 +19,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path='/' element={<Dashboard />} />
         <Route path="/Qrpage" element={<QRPage />} />
+        
         <Route path="/inventory-management" element={<InventoryManagement />} />
         <Route path='/expirationalert' element={<ExpirationAlert />} />
         <Route path='/overstockalert' element={<OverstockAlert />} />
@@ -27,7 +28,7 @@ function App() {
       </Route>
 
     {/*Pages without layout*/}
-      
+    <Route path='/signin' element={<SignIn />} />
     </Routes>
   );
 }
