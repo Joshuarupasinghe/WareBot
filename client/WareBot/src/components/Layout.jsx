@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
@@ -9,7 +9,7 @@ import { FaTruckLoading } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
 import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
   const [activeLinkName, setActiveLinkName] = useState("Dashboard");
   const navigate = useNavigate();
@@ -76,9 +76,9 @@ const Layout = ({ children }) => {
       <div className="w-full ml-16 md:ml-72 relative min-h-screen">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="fixed inset-0 bg-cover bg-center -z-10"
           style={{
-            backgroundImage: "url('./public/images/Background.png')",
+            backgroundImage: "url('/images/Background.png')",
             filter: "brightness(0.9)",
           }}
         ></div>
@@ -98,7 +98,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Page Content */}
-        <div className="pt-20 relative z-10">{children}</div>
+        <div className="pt-20 relative z-10"><Outlet/></div>
       </div>
     </div>
   );
