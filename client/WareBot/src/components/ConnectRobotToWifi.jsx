@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Don't forget to import useEffect
 import TextField from './TextField';
 import Button from './Button';
 
@@ -7,32 +7,49 @@ const ConnectRobotToWifi = () => {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
 
-    // Submit handler for sending credentials to the ESP8266.
+    // Add useEffect here
+    useEffect(() => {
+        const storedIp = localStorage.getItem('espNewIp');
+        if (storedIp) {
+            console.log("Retrieved stored ESP IP:", storedIp);
+            // Optionally set state or update your UI accordingly.
+            // For example, you might want to display it:
+            setMessage(`ℹ️ Last known ESP IP: ${storedIp}`);
+        }
+    }, []);
+
+
+    // Submit handler for sending credentials to the backend
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Typically, when ESP8266 runs in AP mode, it uses IP 192.168.4.1.
-        const espUrl = 'http://192.168.4.1/connect';
-        const payload = { ssid, password };
-
+      
+        const espIp = '192.168.4.1'; // Initially, the AP IP where the computer connects.
+        const payload = { ssid, password, espIp };
+      
         try {
-            const response = await fetch(espUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Connection failed with status ${response.status}`);
-            }
-
-            const data = await response.json();
-            setMessage(`Success: ${JSON.stringify(data)}`);
+          const response = await fetch('http://localhost:5000/api/configure-wifi', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+      
+          const data = await response.json();
+          if (response.ok) {
+            // Log the new ESP IP to the console.
+            console.log("ESP New IP:", data.espNewIp);
+            setMessage(`✅ Connected! ESP new IP: ${data.espNewIp}`);
+            
+            // Optionally, store the new IP in localStorage for future use.
+            localStorage.setItem('espNewIp', data.espNewIp);
+          } else {
+            setMessage(`❌ Error: ${data.message}`);
+          }
         } catch (error) {
-            console.error("Error:", error);
-            setMessage(`Error: ${error.message}`);
+          console.error('Error:', error);
+          setMessage(`❌ Error: ${error.message}`);
         }
-    };
-
+      };      
+      
     return (
         <div className="bg-black/40 rounded-xl p-8 shadow-lg max-w-md">
             <h2 className="text-white text-xl font-bold mb-6">Connect Robot to WiFi</h2>
