@@ -4,151 +4,171 @@ const StockMovementComponent = () => {
   const [outgoingCollapsed, setOutgoingCollapsed] = useState(false);
   const [incomingCollapsed, setIncomingCollapsed] = useState(true);
 
-  // Mock data for most outgoing products - matching the data shown in screenshot
+  // Mock data for most outgoing products - updated with numeric lightning and humidity
   const outgoingProducts = [
     {
-      id: "65431",
-      name: "Alpha Smart Sensor",
-      route: "12A",
-      itemid: "45AB",
-      batch: "23434",
-      storage: "10,000",
-      onway: "5,000",
-      recieved: "0",
-      outgoing: "250,000",
-      return: "30",
-      sold: "142",
-      remain: "1023"
+      stockId: "65431",
+      productNameRoute: {
+        name: "Alpha Smart Sensor",
+        route: "12A"
+      },
+      batchNo: "23434",
+      quantity: "10,000",
+      priceLKR: "25,000",
+      category: "Sensors",
+      temperatureCelsius: "28",
+      weightKg: "0.45",
+      lightning: "23",
+      humidity: "35",
+      averageUsage: "142"
     },
     {
-      id: "65432",
-      name: "Omega Lithium Battery",
-      route: "5C",
-      itemid: "75AB",
-      batch: "23678",
-      storage: "15,000",
-      onway: "8,000",
-      recieved: "0",
-      outgoing: "430,000",
-      return: "15",
-      sold: "240",
-      remain: "1867"
+      stockId: "65432",
+      productNameRoute: {
+        name: "Omega Lithium Battery",
+        route: "5C"
+      },
+      batchNo: "23678",
+      quantity: "15,000",
+      priceLKR: "8,500",
+      category: "Power",
+      temperatureCelsius: "22",
+      weightKg: "0.85",
+      lightning: "40",
+      humidity: "45",
+      averageUsage: "240"
     },
     {
-      id: "65433",
-      name: "Xenon LED Panel",
-      route: "14D",
-      itemid: "62AB",
-      batch: "23764",
-      storage: "5,000",
-      onway: "2,000",
-      recieved: "0",
-      outgoing: "120,000",
-      return: "45",
-      sold: "89",
-      remain: "534"
+      stockId: "65433",
+      productNameRoute: {
+        name: "Xenon LED Panel",
+        route: "14D"
+      },
+      batchNo: "23764",
+      quantity: "5,000",
+      priceLKR: "12,200",
+      category: "Lighting",
+      temperatureCelsius: "24",
+      weightKg: "1.2",
+      lightning: "12",
+      humidity: "50",
+      averageUsage: "89"
     },
     {
-      id: "65434",
-      name: "Thermostat Module",
-      route: "7B",
-      itemid: "32AB", 
-      batch: "23893",
-      storage: "20,000",
-      onway: "6,000",
-      recieved: "0",
-      outgoing: "280,000",
-      return: "12",
-      sold: "187",
-      remain: "956"
+      stockId: "65434",
+      productNameRoute: {
+        name: "Thermostat Module",
+        route: "7B"
+      },
+      batchNo: "23893",
+      quantity: "20,000",
+      priceLKR: "15,600",
+      category: "Control",
+      temperatureCelsius: "26",
+      weightKg: "0.35",
+      lightning: "65",
+      humidity: "75",
+      averageUsage: "187"
     },
     {
-      id: "65435",
-      name: "Circuit Control Boards",
-      route: "3E",
-      itemid: "91AB",
-      batch: "24019",
-      storage: "25,000",
-      onway: "9,000",
-      recieved: "0",
-      outgoing: "380,000",
-      return: "28",
-      sold: "205",
-      remain: "1320"
+      stockId: "65435",
+      productNameRoute: {
+        name: "Circuit Control Boards",
+        route: "3E"
+      },
+      batchNo: "24019",
+      quantity: "25,000",
+      priceLKR: "18,900",
+      category: "Electronics",
+      temperatureCelsius: "22",
+      weightKg: "0.28",
+      lightning: "78",
+      humidity: "30",
+      averageUsage: "205"
     }
   ];
 
-  // Mock data for most incoming products
+  // Mock data for most incoming products 
   const incomingProducts = [
     {
-      id: "87631",
-      name: "Delta Flux Capacitor",
-      route: "9D",
-      itemid: "28CD",
-      batch: "31456",
-      storage: "18,000",
-      onway: "12,000",
-      recieved: "7,500",
-      outgoing: "0",
-      return: "0",
-      sold: "0",
-      remain: "7,500"
+      stockId: "87631",
+      productNameRoute: {
+        name: "Delta Flux Capacitor",
+        route: "9D"
+      },
+      batchNo: "31456",
+      quantity: "18,000",
+      priceLKR: "32,400",
+      category: "Components",
+      temperatureCelsius: "21",
+      weightKg: "1.8",
+      lightning: "95",
+      humidity: "25",
+      averageUsage: "0"
     },
     {
-      id: "87632",
-      name: "Gamma Power Supply",
-      route: "4G",
-      itemid: "52CD",
-      batch: "31785",
-      storage: "22,000",
-      onway: "15,000",
-      recieved: "9,800",
-      outgoing: "0",
-      return: "0",
-      sold: "0",
-      remain: "9,800"
+      stockId: "87632",
+      productNameRoute: {
+        name: "Gamma Power Supply",
+        route: "4G"
+      },
+      batchNo: "31785",
+      quantity: "22,000",
+      priceLKR: "45,200",
+      category: "Power",
+      temperatureCelsius: "24",
+      weightKg: "2.4",
+      lightning: "82",
+      humidity: "40",
+      averageUsage: "0"
     },
     {
-      id: "87633",
-      name: "Beta Circuit Controller",
-      route: "6J",
-      itemid: "37CD",
-      batch: "31964",
-      storage: "14,000",
-      onway: "10,000",
-      recieved: "6,200",
-      outgoing: "0",
-      return: "0",
-      sold: "0",
-      remain: "6,200"
+      stockId: "87633",
+      productNameRoute: {
+        name: "Beta Circuit Controller",
+        route: "6J"
+      },
+      batchNo: "31964",
+      quantity: "14,000",
+      priceLKR: "22,500",
+      category: "Control",
+      temperatureCelsius: "25",
+      weightKg: "0.65",
+      lightning: "72",
+      humidity: "55",
+      averageUsage: "0"
     },
     {
-      id: "87634",
-      name: "Zeta Thermal Module",
-      route: "2H",
-      itemid: "64CD",
-      batch: "32108",
-      storage: "30,000",
-      onway: "18,000",
-      recieved: "11,500",
-      outgoing: "0",
-      return: "0",
-      sold: "0",
-      remain: "11,500"
+      stockId: "87634",
+      productNameRoute: {
+        name: "Zeta Thermal Module",
+        route: "2H"
+      },
+      batchNo: "32108",
+      quantity: "30,000",
+      priceLKR: "18,900",
+      category: "Thermal",
+      temperatureCelsius: "29",
+      weightKg: "0.95",
+      lightning: "38",
+      humidity: "80",
+      averageUsage: "0"
     },
     {
-      id: "87635",
-      name: "Epsilon Data Hub",
-      route: "8A",
-      itemid: "19CD",
-      batch: "32245",
-      storage: "26,000",
-      onway: "16,000",
-      recieved: "10,200",
-      outgoing: "0",
-      return: "0",
-      sold: "0",
-      remain: "10,200"
+      stockId: "87635",
+      productNameRoute: {
+        name: "Epsilon Data Hub",
+        route: "8A"
+      },
+      batchNo: "32245",
+      quantity: "26,000",
+      priceLKR: "56,800",
+      category: "Networking",
+      temperatureCelsius: "22",
+      weightKg: "1.5",
+      lightning: "89",
+      humidity: "35",
+      averageUsage: "0"
     }
   ];
 
@@ -192,17 +212,17 @@ const StockMovementComponent = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-blue-300 border-b border-blue-800">
-                      <th className="px-4 py-2 text-left">ID</th>
-                      <th className="px-4 py-2 text-left">Name</th>
-                      <th className="px-4 py-2 text-left">ITEM ID</th>
-                      <th className="px-4 py-2 text-center">BATCH</th>
-                      <th className="px-4 py-2 text-center">STORAGE</th>
-                      <th className="px-4 py-2 text-center">ON WAY</th>
-                      <th className="px-4 py-2 text-center">RECEIVED</th>
-                      <th className="px-4 py-2 text-center">OUTGOING</th>
-                      <th className="px-4 py-2 text-center">RETURN</th>
-                      <th className="px-4 py-2 text-center">SOLD</th>
-                      <th className="px-4 py-2 text-right">REMAIN</th>
+                      <th className="px-4 py-2 text-left">Stock ID</th>
+                      <th className="px-4 py-2 text-left">Product Name & Route</th>
+                      <th className="px-4 py-2 text-left">Batch No</th>
+                      <th className="px-4 py-2 text-center">Quantity</th>
+                      <th className="px-4 py-2 text-center">Price (LKR)</th>
+                      <th className="px-4 py-2 text-center">Category</th>
+                      <th className="px-4 py-2 text-center">Temperature (Celsius)</th>
+                      <th className="px-4 py-2 text-center">Weight (kg)</th>
+                      <th className="px-4 py-2 text-center">Lightning</th>
+                      <th className="px-4 py-2 text-center">Humidity</th>
+                      <th className="px-4 py-2 text-right">Average Usage</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -211,20 +231,20 @@ const StockMovementComponent = () => {
                         key={index}
                         className="border-b border-blue-800/50 hover:bg-blue-900/20"
                       >
-                        <td className="px-4 py-3 text-blue-100">{product.id}</td>
+                        <td className="px-4 py-3 text-blue-100">{product.stockId}</td>
                         <td className="px-4 py-3">
-                          <div className="text-blue-100">{product.name}</div>
-                          <div className="text-xs text-blue-400">Route {product.route}</div>
+                          <div className="text-blue-100">{product.productNameRoute.name}</div>
+                          <div className="text-xs text-blue-400">Route {product.productNameRoute.route}</div>
                         </td>
-                        <td className="px-4 py-3 text-blue-100">{product.itemid}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.batch}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.storage}</td>
-                        <td className="px-4 py-3 text-center text-yellow-400">{product.onway}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.recieved}</td>
-                        <td className="px-4 py-3 text-center text-green-400">{product.outgoing}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.return}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.sold}</td>
-                        <td className="px-4 py-3 text-right text-blue-100">{product.remain}</td>
+                        <td className="px-4 py-3 text-blue-100">{product.batchNo}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.quantity}</td>
+                        <td className="px-4 py-3 text-center text-green-400">{product.priceLKR}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.category}</td>
+                        <td className="px-4 py-3 text-center text-yellow-400">{product.temperatureCelsius}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.weightKg}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.lightning}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.humidity}%</td>
+                        <td className="px-4 py-3 text-right text-blue-100">{product.averageUsage}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -269,17 +289,17 @@ const StockMovementComponent = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-blue-300 border-b border-blue-800">
-                      <th className="px-4 py-2 text-left">ID</th>
-                      <th className="px-4 py-2 text-left">Name</th>
-                      <th className="px-4 py-2 text-left">ITEM ID</th>
-                      <th className="px-4 py-2 text-center">BATCH</th>
-                      <th className="px-4 py-2 text-center">STORAGE</th>
-                      <th className="px-4 py-2 text-center">ON WAY</th>
-                      <th className="px-4 py-2 text-center">RECEIVED</th>
-                      <th className="px-4 py-2 text-center">OUTGOING</th>
-                      <th className="px-4 py-2 text-center">RETURN</th>
-                      <th className="px-4 py-2 text-center">SOLD</th>
-                      <th className="px-4 py-2 text-right">REMAIN</th>
+                      <th className="px-4 py-2 text-left">Stock ID</th>
+                      <th className="px-4 py-2 text-left">Product Name & Route</th>
+                      <th className="px-4 py-2 text-left">Batch No</th>
+                      <th className="px-4 py-2 text-center">Quantity</th>
+                      <th className="px-4 py-2 text-center">Price (LKR)</th>
+                      <th className="px-4 py-2 text-center">Category</th>
+                      <th className="px-4 py-2 text-center">Temperature (Celsius)</th>
+                      <th className="px-4 py-2 text-center">Weight (kg)</th>
+                      <th className="px-4 py-2 text-center">Lightning</th>
+                      <th className="px-4 py-2 text-center">Humidity</th>
+                      <th className="px-4 py-2 text-right">Average Usage</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -288,20 +308,20 @@ const StockMovementComponent = () => {
                         key={index}
                         className="border-b border-blue-800/50 hover:bg-blue-900/20"
                       >
-                        <td className="px-4 py-3 text-blue-100">{product.id}</td>
+                        <td className="px-4 py-3 text-blue-100">{product.stockId}</td>
                         <td className="px-4 py-3">
-                          <div className="text-blue-100">{product.name}</div>
-                          <div className="text-xs text-blue-400">Route {product.route}</div>
+                          <div className="text-blue-100">{product.productNameRoute.name}</div>
+                          <div className="text-xs text-blue-400">Route {product.productNameRoute.route}</div>
                         </td>
-                        <td className="px-4 py-3 text-blue-100">{product.itemid}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.batch}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.storage}</td>
-                        <td className="px-4 py-3 text-center text-yellow-400">{product.onway}</td>
-                        <td className="px-4 py-3 text-center text-blue-500">{product.recieved}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.outgoing}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.return}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.sold}</td>
-                        <td className="px-4 py-3 text-right text-blue-100">{product.remain}</td>
+                        <td className="px-4 py-3 text-blue-100">{product.batchNo}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.quantity}</td>
+                        <td className="px-4 py-3 text-center text-green-400">{product.priceLKR}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.category}</td>
+                        <td className="px-4 py-3 text-center text-yellow-400">{product.temperatureCelsius}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.weightKg}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.lightning}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.humidity}%</td>
+                        <td className="px-4 py-3 text-right text-blue-100">{product.averageUsage}</td>
                       </tr>
                     ))}
                   </tbody>
