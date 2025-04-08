@@ -24,7 +24,16 @@ const StockNotifications = () => {
   };
 
   return (
-    <div style={{ position: "fixed", top: "20px", right: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div
+      style={{
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+      }}
+    >
       {notifications.map(({ id, message, type }) => (
         <div
           key={id}
@@ -37,13 +46,30 @@ const StockNotifications = () => {
             boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
             backgroundColor: type === "success" ? "#28a745" : "#dc3545",
             transition: "opacity 0.3s ease-in-out, transform 0.3s ease-in-out",
-            opacity: "1",
-            transform: "translateX(0)"
+            opacity: 1,
+            transform: "translateX(0)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <strong>{message}</strong>
-          <p>Detected by IoT System</p>
-          <button onClick={() => removeNotification(id)} style={{ marginLeft: "10px", background: "none", border: "none", color: "white", cursor: "pointer" }}>✖</button>
+          <div>
+            <strong>{message}</strong>
+            <p style={{ margin: 0, fontSize: "14px" }}>Detected by IoT System</p>
+          </div>
+          <button
+            onClick={() => removeNotification(id)}
+            style={{
+              marginLeft: "10px",
+              background: "none",
+              border: "none",
+              color: "white",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            ✖
+          </button>
         </div>
       ))}
     </div>
