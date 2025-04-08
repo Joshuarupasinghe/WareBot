@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
-
+import SignUp from './pages/Signup';
 import QRPage from './pages/QrGenerator';
 import SignIn from './pages/SignIn';
 import InventoryManagement from './components/InventoryManagement';
@@ -29,6 +29,7 @@ function App() {
 
     {/*Pages without layout*/}
     <Route path='/signin' element={<SignIn />} />
+    <Route path='/signup' element={<SignUp />} />
     </Routes>
   );
 }
