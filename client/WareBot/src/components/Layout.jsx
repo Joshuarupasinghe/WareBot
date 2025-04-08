@@ -76,9 +76,9 @@ const Layout = () => {
       <div className="w-full ml-16 md:ml-72 relative min-h-screen">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="fixed inset-0 bg-cover bg-center -z-10"
           style={{
-            backgroundImage: "url('./public/images/Background.png')",
+            backgroundImage: "url('/images/Background.png')",
             filter: "brightness(0.9)",
           }}
         ></div>
