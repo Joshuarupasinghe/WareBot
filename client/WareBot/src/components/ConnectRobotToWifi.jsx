@@ -6,7 +6,6 @@ const ConnectRobotToWifi = () => {
     const [ssid, setSsid] = useState('');
     const [password, setPassword] = useState('');
     const [setMessage] = useState('');
-    //const [message, setMessage] = useState('');
 
     // Add useEffect here
     useEffect(() => {
