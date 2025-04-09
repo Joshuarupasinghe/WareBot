@@ -80,12 +80,12 @@ const ConnectRobotToWifi = () => {
                 </div>
                 <Button type="submit">Connect to Robot</Button>
             </form>
-            {message && (
+            {/* {message && (
                 <div style={{ marginTop: '1rem' }}>
                     <h3>Response:</h3>
                     <p>{message}</p>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };
