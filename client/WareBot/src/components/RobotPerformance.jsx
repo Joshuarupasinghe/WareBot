@@ -31,19 +31,19 @@ const RobotPerformance = () => {
         label: 'This Week',
         data: [200, 220, 340, 450, 320, 370, 460],
         fill: true,
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(59, 130, 246, 0.3)',
         borderColor: '#2196F3',
         tension: 0.4,
-        pointRadius: 1,
+        pointRadius: 3,
       },
       {
         label: 'Last Week',
         data: [500, 160, 270, 230, 180, 110, 140],
         fill: true,
-        backgroundColor: 'rgba(34, 211, 238, 0.1)',
+        backgroundColor: 'rgba(34, 211, 238, 0.3)',
         borderColor: '#26C6DA',
         tension: 0.4,
-        pointRadius: 1,
+        pointRadius: 3,
       },
     ],
   }
@@ -83,9 +83,9 @@ const RobotPerformance = () => {
       <div className="bg-black/55 p-6 rounded-3xl shadow-xl">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-xl text-white font-semibold mb-2">Task Completion Rate</h3>
-            <h5 className="text-white text-sm">
-              <span className="text-green-500 font-semibold">(+5) more</span> than Last week
+            <h3 className="text-xl text-white font-semibold">Task Completion Rate</h3>
+            <h5 className="text-white text-md">
+              <span className="text-green-500 font-semibold">(+5) more</span> than Last Week
             </h5>
           </div>
           <div className="text-white text-sm mt-1 space-y-1">
@@ -99,7 +99,7 @@ const RobotPerformance = () => {
             </div>
           </div>
         </div>
-        <div className="h-[300px] mt-4">
+        <div className="h-72 mt-4">
           <Line data={data} options={options} />
         </div>
       </div>
