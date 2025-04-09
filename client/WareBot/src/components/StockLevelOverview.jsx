@@ -10,7 +10,6 @@ import {
   Legend,
 } from 'chart.js'
 
-// Register required Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 const StockLevelOverview = () => {
