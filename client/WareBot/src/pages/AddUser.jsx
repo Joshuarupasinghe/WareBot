@@ -1,7 +1,33 @@
 import React from 'react';
 import TextField from '../components/TextField';
+import axios from 'axios';
 
-const SignUp = () => {
+const AddUser = () => {
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const adminPassword = form.adminPassword.value;
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/register', {
+        name,
+        email,
+        password,
+        adminPassword,
+      });
+
+      alert(response.data.message);
+      form.reset();
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Something went wrong';
+      alert(errorMsg);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen font-sans">
       {/* Left Panel */}
@@ -53,12 +79,13 @@ const SignUp = () => {
               Enter User's Details and In the End Your Password to Add User
             </p>
 
-            <form className="space-y-4">
-              <TextField label="Name" placeholder="User's Full name" type="text" />
-              <TextField label="Email" placeholder="User's email address" type="email" />
-              <TextField label="Password" placeholder="User's password" type="password" />
+            <form className="space-y-4" onSubmit={handleAddUser}>
+              <TextField label="Name" name="name" placeholder="User's Full name" type="text" />
+              <TextField label="Email" name="email" placeholder="User's email address" type="email" />
+              <TextField label="Password" name="password" placeholder="User's password" type="password" />
               <TextField
                 label="Admin Password"
+                name="adminPassword"
                 placeholder="Your Super Admin Password"
                 type="password"
               />
@@ -95,4 +122,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default AddUser;
