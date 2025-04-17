@@ -5,7 +5,7 @@ import Button from './Button';
 const ConnectRobotToWifi = () => {
     const [ssid, setSsid] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [setMessage] = useState('');
 
     // Add useEffect here
     useEffect(() => {

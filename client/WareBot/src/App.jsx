@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
-import SignUp from './pages/Signup';
+import AddUser from './pages/AddUser';
 import QRPage from './pages/QrGenerator';
 import SignIn from './pages/SignIn';
 import InventoryManagement from './components/InventoryManagement';
@@ -27,11 +27,12 @@ function App() {
         <Route path='/most-in-out-stocks' element={<StockMovementComponent />} />
         <Route path='/status&tasks' element={<RobotStatus />} />
         <Route path='/settings&configuration' element={<SettingsAndConfiguration />} />
+        <Route path='/addUser' element={<AddUser />} />
       </Route>
 
     {/*Pages without layout*/}
     <Route path='/signin' element={<SignIn />} />
-    <Route path='/signup' element={<SignUp />} />
+    
     </Routes>
   );
 }
