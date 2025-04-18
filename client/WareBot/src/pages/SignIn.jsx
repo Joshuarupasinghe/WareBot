@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import TextField from '../components/TextField';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const SignIn = () => {
+    const { login } = useAuth();
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false); // State for popup visibility
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -27,15 +27,19 @@ const SignIn = () => {
 
         try {
             const res = await axios.post('http://localhost:5000/api/users/login', formData);
-            localStorage.setItem('token', res.data.token);
-            setShowSuccessPopup(true); // Show success popup after login
+
+            // Save user and token using context
+            login(res.data.user, res.data.token);
+
+            // Show popup
+            setShowSuccessPopup(true);
+
+            // Redirect after 2 seconds
             setTimeout(() => {
-                navigate('/'); 
-            }, 2000); // Delay navigation to allow popup to show
+                navigate('/');
+            }, 2000);
         } catch (err) {
-            setError(
-                err.response?.data?.message || 'Login failed. Please try again.'
-            );
+            setError(err.response?.data?.message || 'Login failed. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -121,12 +125,12 @@ const SignIn = () => {
                         </div>
                     </form>
 
-                    <p className="mt-6 text-sm text-gray-400">
+                    {/* <p className="mt-6 text-sm text-gray-400">
                         Don’t have an account?{' '}
                         <Link to="/signup" className="text-blue-400 hover:underline cursor-pointer">
                             Sign up
                         </Link>
-                    </p>
+                    </p> */}
                 </div>
             </div>
 
@@ -140,7 +144,7 @@ const SignIn = () => {
                 </div>
             )}
 
-            {/* Animation Styles */}
+            {/* Pulse Animation Style */}
             <style jsx="true">{`
                 @keyframes pulse {
                     0%, 100% {
