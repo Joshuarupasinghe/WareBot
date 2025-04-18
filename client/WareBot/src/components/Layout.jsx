@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
@@ -7,11 +7,19 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
 import { FaTruckLoading } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
+import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
   const [activeLinkName, setActiveLinkName] = useState("Dashboard");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/signin'); // redirect to login if no token
+    }
+  }, []);
 
   const handleLinkClick = (index, path, name) => {
     setActiveLink(index);
@@ -19,15 +27,25 @@ const Layout = ({ children }) => {
     navigate(path);
   };
 
+  const handleLogout = () => {
+    // Clear user session (update based on how you're storing it)
+    localStorage.removeItem('user');        // or sessionStorage
+    localStorage.removeItem('token');       // if you store token
+    // Redirect to login page
+    navigate('/signin');
+  };
+
+
   const SidebarLinks = [
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 5, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 6, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 7, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 8, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
+    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
+    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (
@@ -46,9 +64,8 @@ const Layout = ({ children }) => {
           {SidebarLinks.map((link, index) => (
             <li
               key={index}
-              className={`text-white font-medium rounded-sm py-2 px-5 hover:bg-[#667A8A] ${
-                activeLink === index ? "bg-[#667A8A]" : ""
-              }`}
+              className={`text-white font-medium rounded-sm py-2 px-5 hover:bg-[#667A8A] ${activeLink === index ? "bg-[#667A8A]" : ""
+                }`}
               onClick={() => handleLinkClick(index, link.path, link.name)}
             >
               <div className="flex justify-center md:justify-start items-center md:space-x-5">
@@ -61,7 +78,9 @@ const Layout = ({ children }) => {
 
         {/* Logout Button */}
         <div className="text-white w-full absolute bottom-5 left-0 px-4 py-2 cursor-pointer text-center">
-          <p className="flex justify-center md:justify-start font-medium rounded-sm py-2 px-5 bg-[#667A8A]">
+          <p
+            onClick={handleLogout}
+            className="flex justify-center md:justify-start font-medium rounded-sm py-2 px-5 bg-[#667A8A]">
             <span>
               <IoLogOut className="text-2xl" />
             </span>
@@ -74,9 +93,9 @@ const Layout = ({ children }) => {
       <div className="w-full ml-16 md:ml-72 relative min-h-screen">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="fixed inset-0 bg-cover bg-center -z-10"
           style={{
-            backgroundImage: "url('./public/images/Background.png')",
+            backgroundImage: "url('/images/Background.png')",
             filter: "brightness(0.9)",
           }}
         ></div>
@@ -96,7 +115,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Page Content */}
-        <div className="pt-20 relative z-10">{children}</div>
+        <div className="pt-20 relative z-10"><Outlet /></div>
       </div>
     </div>
   );
