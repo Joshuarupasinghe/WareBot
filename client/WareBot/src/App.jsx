@@ -5,7 +5,7 @@ import Layout from './components/Layout';
 import AddUser from './pages/AddUser';
 import QRPage from './pages/QrGenerator';
 import SignIn from './pages/SignIn';
-import InventoryManagement from './components/InventoryManagement';
+import InventoryManagement from './pages/InventoryManagement';
 import ExpirationAlert from './components/ExpirationAlert';
 import OverstockAlert from './components/OverstockAlert';
 import StockMovementComponent from './components/mostInOutstocks';
