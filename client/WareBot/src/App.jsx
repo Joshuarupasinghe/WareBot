@@ -11,13 +11,13 @@ import OverstockAlert from './components/OverstockAlert';
 import StockMovementComponent from './components/mostInOutstocks';
 import RobotStatus from './pages/RobotStatus';
 import SettingsAndConfiguration from './pages/settings&configuration';
-import PrivateRoute from './components/PrivateRoute';
+// import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <Routes>
       {/* Protected Routes */}
-      <Route element={<PrivateRoute />}>
+      {/* <Route element={<PrivateRoute />}> */}
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/Qrpage" element={<QRPage />} />
@@ -29,7 +29,7 @@ function App() {
           <Route path="/settings&configuration" element={<SettingsAndConfiguration />} />
           <Route path="/addUser" element={<AddUser />} />
         </Route>
-      </Route>
+      {/* </Route> */}
 
       {/* Public Routes */}
       <Route path="/signin" element={<SignIn />} />

@@ -17,7 +17,7 @@ const Layout = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/signin'); // redirect to login if no token
+      // navigate('/signin'); // redirect to login if no token
     }
   }, []);
 
@@ -32,7 +32,7 @@ const Layout = () => {
     localStorage.removeItem('user');        // or sessionStorage
     localStorage.removeItem('token');       // if you store token
     // Redirect to login page
-    navigate('/signin');
+    // navigate('/signin'); 
   };
 
 
