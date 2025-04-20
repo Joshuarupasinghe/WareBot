@@ -1,8 +1,50 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; 
 import TextField from '../components/TextField';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const SignIn = () => {
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            const res = await axios.post('http://localhost:5000/api/users/login', formData);
+
+            // Save user and token using context
+            login(res.data.user, res.data.token);
+
+            // Show popup
+            setShowSuccessPopup(true);
+
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="flex h-screen font-sans">
             {/* Left Panel */}
@@ -48,44 +90,75 @@ const SignIn = () => {
                         Enter your email and password to sign in
                     </p>
 
-                    <form className="space-y-4">
-                        <TextField label="Email" placeholder="Your email address" type="email" />
-                        <TextField label="Password" placeholder="Your password" type="password" />
+                    {error && (
+                        <div className="text-red-400 text-sm mb-4 text-center">
+                            {error}
+                        </div>
+                    )}
+
+                    <form className="space-y-4" onSubmit={handleSubmit}>
+                        <TextField
+                            label="Email"
+                            placeholder="Your email address"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            label="Password"
+                            placeholder="Your password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                        />
 
                         <div className="mt-4">
                             <button
                                 type="submit"
                                 className="w-full py-3 bg-gradient-to-r from-[#5653FE] to-[#8B5CF6] text-white rounded-xl font-medium hover:opacity-90 hover:scale-105 transform transition"
+                                disabled={loading}
                             >
-                                Sign In
+                                {loading ? 'Signing In...' : 'Sign In'}
                             </button>
                         </div>
                     </form>
 
-                    <p className="mt-6 text-sm text-gray-400">
+                    {/* <p className="mt-6 text-sm text-gray-400">
                         Don’t have an account?{' '}
                         <Link to="/signup" className="text-blue-400 hover:underline cursor-pointer">
                             Sign up
                         </Link>
-                    </p>
+                    </p> */}
                 </div>
             </div>
 
-            {/* Animation Styles */}
-            <style jsx="true">{`
-        @keyframes pulse {
-          0%, 100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.1);
-          }
-        }
+            {/* Success Popup */}
+            {showSuccessPopup && (
+                <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg text-center shadow-xl w-1/3">
+                        <h3 className="text-xl font-semibold text-green-600 mb-4">Login Successful!</h3>
+                        <p className="text-gray-700">Welcome back! You will be redirected shortly.</p>
+                    </div>
+                </div>
+            )}
 
-        .animate-pulse {
-          animation: pulse 1.5s infinite;
-        }
-      `}</style>
+            {/* Pulse Animation Style */}
+            <style jsx="true">{`
+                @keyframes pulse {
+                    0%, 100% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.1);
+                    }
+                }
+
+                .animate-pulse {
+                    animation: pulse 1.5s infinite;
+                }
+            `}</style>
         </div>
     );
 };

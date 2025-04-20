@@ -1,28 +1,37 @@
 import React from 'react';
 import TextField from '../components/TextField';
+import axios from 'axios';
 
-const SignUp = () => {
+const AddUser = () => {
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const adminPassword = form.adminPassword.value;
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/users/register', {
+        name,
+        email,
+        password,
+        adminPassword,
+      });
+
+      alert(response.data.message);
+      form.reset();
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Something went wrong';
+      alert(errorMsg);
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row min-h-screen font-sans">
-      {/* Left Panel */}
-      <div
-        className="md:w-1/2 w-full h-72 md:h-auto relative bg-no-repeat bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/warebotCover.jpg')" }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/40 flex items-center justify-center">
-          <div className="text-center text-white px-4 md:px-6">
-            <p className="text-sm tracking-widest uppercase opacity-80 mb-2 md:pl-[200px]">
-              Inspired by the future:
-            </p>
-            <div className="text-3xl md:text-4xl font-bold tracking-wider md:pl-[200px]">
-              WAREBOT
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel */}
-      <div className="md:w-1/2 w-full flex items-center justify-center bg-[url('/images/Background.png')] bg-cover bg-center">
+    <div className="flex flex-col md:flex-row min-h-screen font-sans items-center justify-center">
+      
+      <div className="md:w-1/2 w-full flex items-center justify-center">
         <div className="w-full max-w-md px-4 py-6 sm:px-6 md:px-8 lg:px-10 text-white overflow-auto">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-6">
             ADD USERS
@@ -53,12 +62,13 @@ const SignUp = () => {
               Enter User's Details and In the End Your Password to Add User
             </p>
 
-            <form className="space-y-4">
-              <TextField label="Name" placeholder="User's Full name" type="text" />
-              <TextField label="Email" placeholder="User's email address" type="email" />
-              <TextField label="Password" placeholder="User's password" type="password" />
+            <form className="space-y-4" onSubmit={handleAddUser}>
+              <TextField label="Name" name="name" placeholder="User's Full name" type="text" />
+              <TextField label="Email" name="email" placeholder="User's email address" type="email" />
+              <TextField label="Password" name="password" placeholder="User's password" type="password" />
               <TextField
                 label="Admin Password"
+                name="adminPassword"
                 placeholder="Your Super Admin Password"
                 type="password"
               />
@@ -95,4 +105,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default AddUser;
