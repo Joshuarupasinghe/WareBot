@@ -5,13 +5,11 @@ require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Register a new user with Super Admin password validation
 exports.registerUser = async (req, res) => {
   const { name, email, password, adminPassword } = req.body;
 
   try {
-    // Check for Super Admin
-    const superAdmin = await User.findOne({ email: 'superadmin@example.com' });
+    const superAdmin = await User.findOne({ email: 'superadmin12@example.com' });
     if (!superAdmin) {
       return res.status(403).json({ message: 'Super Admin not found' });
     }
@@ -21,13 +19,11 @@ exports.registerUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid Super Admin password' });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Create and save new user
     const newUser = new User({ name, email, password });
     await newUser.save();
 
@@ -40,12 +36,10 @@ exports.registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error in registerUser:', error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Login existing user
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -72,7 +66,6 @@ exports.loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error in loginUser:', error.message);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
