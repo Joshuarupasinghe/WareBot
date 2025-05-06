@@ -7,7 +7,8 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
 import { FaTruckLoading } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
-import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
+import { BiTransfer } from "react-icons/bi";
+import { MdQrCode } from "react-icons/md"; // Added for the Most In and Out Stocks icon
 
 const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
@@ -39,13 +40,14 @@ const Layout = () => {
   const SidebarLinks = [
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
-    { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
-    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 3, path: "/qr-tools", name: "QR Tools", icon: MdQrCode },
+    { id: 4, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
+    { id: 5, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 6, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
+    { id: 7, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
+    { id: 8, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 9, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 10, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (
