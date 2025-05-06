@@ -24,7 +24,7 @@ const QRScannerPage = () => {
                 setScanResult(decodedText);
                 setErrorMsg('');
               },
-              _error => {
+              () => {
                 // ignore scan errors
               }
             )

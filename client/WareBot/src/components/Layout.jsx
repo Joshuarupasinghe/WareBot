@@ -40,14 +40,13 @@ const Layout = () => {
   const SidebarLinks = [
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
-    { id: 3, path: "/qr-tools", name: "QR Tools", icon: MdQrCode },
-    { id: 4, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 5, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
-    { id: 6, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 7, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 8, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 9, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 10, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
+    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
+    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
+    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (
@@ -108,8 +107,13 @@ const Layout = () => {
             {/* Left side - Active Link Name */}
             <h1 className="text-xl font-semibold">{activeLinkName}</h1>
 
-            {/* Right side - Chat Icon & User Avatar */}
+            {/* Right side - QR Icon, Chat Icon & User Avatar */}
             <div className="flex items-center gap-4 mr-16 md:mr-72">
+              <MdQrCode
+                size={26}
+                className="text-[#5FB3F6] cursor-pointer"
+                onClick={() => handleLinkClick(-1, "/qr-tools", "QR Tools")}
+              />
               <IoChatbubbleEllipses size={28} className="text-[#5FB3F6]" />
               <img src="/defaultProfilePic.jpg" alt="avatar" className="w-8 h-8 rounded-full" />
             </div>
