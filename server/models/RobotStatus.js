@@ -1,10 +1,13 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-const robotStatusSchema = new mongoose.Schema({
-  stockId: { type: String, required: true },
-  currentTask: { type: String, required: true },
-  nextTask: { type: String, required: true },
-  progress: { type: Number, required: true }
-}, { timestamps: true });
+const RobotStatusSchema = new mongoose.Schema(
+  {
+    deviceId: { type: String, required: true },
+    stockId: { type: String, required: true },
+    status: { type: String, required: true },
+    fetchedAt: { type: Date, default: Date.now }
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('RobotStatus', robotStatusSchema);
+module.exports = mongoose.model('RobotStatus', RobotStatusSchema);

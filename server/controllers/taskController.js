@@ -1,4 +1,5 @@
 const Robot = require('../models/Robot');
+const RobotStatus = require('../models/RobotStatus');
 
 exports.getCurrentTask = async (req, res) => {
     const { deviceId } = req.params;
@@ -15,8 +16,19 @@ exports.getCurrentTask = async (req, res) => {
         const data = await response.json();
 
         if (response.ok) {
+            // Assume `data.task` contains `status` and `stockId`
+            const { status, stockId } = data.task;
+
+            // Save the fetched task info to RobotStatus
+            await RobotStatus.create({
+                deviceId,
+                stockId,
+                status,
+                fetchedAt: new Date()
+            });
+
             res.status(200).json({
-                message: 'Current task fetched successfully',
+                message: 'Current task fetched and stored successfully',
                 task: data.task
             });
         } else {
@@ -27,4 +39,3 @@ exports.getCurrentTask = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
-  
