@@ -1,5 +1,4 @@
 const Robot = require('../models/Robot');
-const fetch = require('node-fetch'); // Required if you're using Node <18
 
 exports.getCurrentTask = async (req, res) => {
     const { deviceId } = req.params;
