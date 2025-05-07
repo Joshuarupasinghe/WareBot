@@ -7,7 +7,7 @@ const RobotCurrentTask = ({ deviceId }) => {
     useEffect(() => {
         const fetchCurrentTask = async () => {
             try {
-                const res = await fetch(`/api/robot/${deviceId}/task`);
+                const res = await fetch(`http://localhost:5000/api/robot/${deviceId}/task`);
                 const data = await res.json();
                 if (res.ok) {
                     setTask(data.task || "No task");
