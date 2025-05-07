@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ExpiringStocksSection from './ExpiringStocksSection';
-import ReOrderTable from './ReOrderSuggestions';
+import ReorderSuggestions from './ReOrderSuggestions';
+import StockPage from './StockPage';
+
 
 const InventoryManagement = () => {
   const [openDropdown, setOpenDropdown] = useState({
@@ -74,15 +76,17 @@ const InventoryManagement = () => {
         </div>
         {openDropdown.reorder && (
           <div className="px-6 py-4 mt-2">
-            <ReOrderTable/>
+
+            <ReorderSuggestions />
+
           </div>
         )}
       </div>
 
-      {/* Out Of Stock Items */}
+      {/* Stock List */}
       <div className="mb-6">
         <div className="bg-gray-900 px-6 py-4 flex justify-between items-center border-b border-gray-700 text-white">
-          <h2 className="text-xl font-medium">Out of Stock Items</h2>
+          <h2 className="text-xl font-medium">Stock List</h2>
           <button
             onClick={() => toggleDropdown('outOfStock')}
             className="w-8 h-8 flex items-center justify-center border border-indigo-500 rounded text-indigo-500 bg-gray-800 hover:bg-gray-700 focus:outline-none"
@@ -104,7 +108,7 @@ const InventoryManagement = () => {
         </div>
         {openDropdown.outOfStock && (
           <div className="px-6 py-4 mt-2">
-            {/* --- */}
+            <StockPage />
           </div>
         )}
       </div>
