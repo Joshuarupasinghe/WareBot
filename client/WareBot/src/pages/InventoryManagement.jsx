@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ExpiringStocksSection from './ExpiringStocksSection';
+import ReOrderTable from './ReOrderSuggestions';
 
 const InventoryManagement = () => {
   const [openDropdown, setOpenDropdown] = useState({
@@ -73,7 +74,7 @@ const InventoryManagement = () => {
         </div>
         {openDropdown.reorder && (
           <div className="px-6 py-4 mt-2">
-            {/* ---- */}
+            <ReOrderTable/>
           </div>
         )}
       </div>
