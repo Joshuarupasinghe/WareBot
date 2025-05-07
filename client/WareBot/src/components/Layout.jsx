@@ -3,9 +3,9 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
-import { FaMapLocationDot } from "react-icons/fa6";
+import { FaUserPlus } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
-import { FaTruckLoading } from "react-icons/fa";
+import { FaQrcode } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
 import { BiTransfer } from "react-icons/bi";
 import { MdQrCode } from "react-icons/md"; // Added for the Most In and Out Stocks icon
@@ -29,11 +29,10 @@ const Layout = () => {
   };
 
   const handleLogout = () => {
-    // Clear user session (update based on how you're storing it)
-    localStorage.removeItem('user');        // or sessionStorage
-    localStorage.removeItem('token');       // if you store token
-    // Redirect to login page
-    // navigate('/signin'); 
+    
+    localStorage.removeItem('user');       
+    localStorage.removeItem('token');       
+   
   };
 
 
@@ -41,10 +40,10 @@ const Layout = () => {
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
-    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 4, path: "/mostInOut", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 5, path: "/Qrpage", name: "QR Generating", icon: FaQrcode },
+    { id: 6, path: "/addUser", name: "Add Users", icon: FaUserPlus },
+    { id: 7, path: "/Reports_Analytics", name: "Reports & Analytics", icon: GrAnalytics },
     { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
     { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
