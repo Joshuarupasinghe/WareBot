@@ -1,17 +1,26 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
-import { FaMapLocationDot } from "react-icons/fa6";
+import { FaUserPlus } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
-import { FaTruckLoading } from "react-icons/fa";
+import { FaQrcode } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
+import { BiTransfer } from "react-icons/bi";
+import { MdQrCode } from "react-icons/md"; // Added for the Most In and Out Stocks icon
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
   const [activeLinkName, setActiveLinkName] = useState("Dashboard");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // navigate('/signin'); // redirect to login if no token
+    }
+  }, []);
 
   const handleLinkClick = (index, path, name) => {
     setActiveLink(index);
@@ -19,13 +28,21 @@ const Layout = ({ children }) => {
     navigate(path);
   };
 
+  const handleLogout = () => {
+    
+    localStorage.removeItem('user');       
+    localStorage.removeItem('token');       
+   
+  };
+
+
   const SidebarLinks = [
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 5, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 6, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 4, path: "/mostInOut", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 5, path: "/addUser", name: "Add Users", icon: FaUserPlus },
+    { id: 6, path: "/Reports_Analytics", name: "Reports & Analytics", icon: GrAnalytics },
     { id: 7, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
     { id: 8, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
@@ -46,9 +63,8 @@ const Layout = ({ children }) => {
           {SidebarLinks.map((link, index) => (
             <li
               key={index}
-              className={`text-white font-medium rounded-sm py-2 px-5 hover:bg-[#667A8A] ${
-                activeLink === index ? "bg-[#667A8A]" : ""
-              }`}
+              className={`text-white font-medium rounded-sm py-2 px-5 hover:bg-[#667A8A] ${activeLink === index ? "bg-[#667A8A]" : ""
+                }`}
               onClick={() => handleLinkClick(index, link.path, link.name)}
             >
               <div className="flex justify-center md:justify-start items-center md:space-x-5">
@@ -61,7 +77,9 @@ const Layout = ({ children }) => {
 
         {/* Logout Button */}
         <div className="text-white w-full absolute bottom-5 left-0 px-4 py-2 cursor-pointer text-center">
-          <p className="flex justify-center md:justify-start font-medium rounded-sm py-2 px-5 bg-[#667A8A]">
+          <p
+            onClick={handleLogout}
+            className="flex justify-center md:justify-start font-medium rounded-sm py-2 px-5 bg-[#667A8A]">
             <span>
               <IoLogOut className="text-2xl" />
             </span>
@@ -74,9 +92,9 @@ const Layout = ({ children }) => {
       <div className="w-full ml-16 md:ml-72 relative min-h-screen">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="fixed inset-0 bg-cover bg-center -z-10"
           style={{
-            backgroundImage: "url('./public/images/Background.png')",
+            backgroundImage: "url('/images/Background.png')",
             filter: "brightness(0.9)",
           }}
         ></div>
@@ -87,8 +105,13 @@ const Layout = ({ children }) => {
             {/* Left side - Active Link Name */}
             <h1 className="text-xl font-semibold">{activeLinkName}</h1>
 
-            {/* Right side - Chat Icon & User Avatar */}
+            {/* Right side - QR Icon, Chat Icon & User Avatar */}
             <div className="flex items-center gap-4 mr-16 md:mr-72">
+              <MdQrCode
+                size={26}
+                className="text-[#5FB3F6] cursor-pointer"
+                onClick={() => handleLinkClick(-1, "/qr-tools", "QR Tools")}
+              />
               <IoChatbubbleEllipses size={28} className="text-[#5FB3F6]" />
               <img src="/defaultProfilePic.jpg" alt="avatar" className="w-8 h-8 rounded-full" />
             </div>
@@ -96,7 +119,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* Page Content */}
-        <div className="pt-20 relative z-10">{children}</div>
+        <div className="pt-20 relative z-10"><Outlet /></div>
       </div>
     </div>
   );
