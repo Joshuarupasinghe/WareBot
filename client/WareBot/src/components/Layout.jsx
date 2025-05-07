@@ -7,7 +7,8 @@ import { FaUserPlus } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
 import { FaQrcode } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
-import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
+import { BiTransfer } from "react-icons/bi";
+import { MdQrCode } from "react-icons/md"; // Added for the Most In and Out Stocks icon
 
 const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
@@ -105,8 +106,13 @@ const Layout = () => {
             {/* Left side - Active Link Name */}
             <h1 className="text-xl font-semibold">{activeLinkName}</h1>
 
-            {/* Right side - Chat Icon & User Avatar */}
+            {/* Right side - QR Icon, Chat Icon & User Avatar */}
             <div className="flex items-center gap-4 mr-16 md:mr-72">
+              <MdQrCode
+                size={26}
+                className="text-[#5FB3F6] cursor-pointer"
+                onClick={() => handleLinkClick(-1, "/qr-tools", "QR Tools")}
+              />
               <IoChatbubbleEllipses size={28} className="text-[#5FB3F6]" />
               <img src="/defaultProfilePic.jpg" alt="avatar" className="w-8 h-8 rounded-full" />
             </div>
