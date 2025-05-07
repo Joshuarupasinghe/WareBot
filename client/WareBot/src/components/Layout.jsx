@@ -41,11 +41,10 @@ const Layout = () => {
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
     { id: 4, path: "/mostInOut", name: "Most In & Out Stocks", icon: BiTransfer },
-    { id: 5, path: "/Qrpage", name: "QR Generating", icon: FaQrcode },
-    { id: 6, path: "/addUser", name: "Add Users", icon: FaUserPlus },
-    { id: 7, path: "/Reports_Analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 5, path: "/addUser", name: "Add Users", icon: FaUserPlus },
+    { id: 6, path: "/Reports_Analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 7, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 8, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (

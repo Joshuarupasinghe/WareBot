@@ -3,6 +3,7 @@ import ExpiringStocksSection from './ExpiringStocksSection';
 import ReorderSuggestions from './ReOrderSuggestions';
 import StockPage from './StockPage';
 
+
 const InventoryManagement = () => {
   const [openDropdown, setOpenDropdown] = useState({
     expiring: true,
@@ -75,7 +76,9 @@ const InventoryManagement = () => {
         </div>
         {openDropdown.reorder && (
           <div className="px-6 py-4 mt-2">
+
             <ReorderSuggestions />
+
           </div>
         )}
       </div>
