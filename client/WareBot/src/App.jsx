@@ -3,9 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Layout from './components/Layout';
 import AddUser from './pages/AddUser';
-import QRPage from './pages/QrGenerator';
+import QrTools from './pages/QrTools';
 import SignIn from './pages/SignIn';
-import InventoryManagement from './components/InventoryManagement';
+import InventoryManagement from './pages/InventoryManagement';
 import ExpirationAlert from './components/ExpirationAlert';
 import OverstockAlert from './components/OverstockAlert';
 import StockMovementComponent from './components/mostInOutstocks';
@@ -20,7 +20,7 @@ function App() {
       {/* <Route element={<PrivateRoute />}> */}
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/Qrpage" element={<QRPage />} />
+          <Route path="/qr-tools" element={<QrTools />} />
           <Route path="/inventory-management" element={<InventoryManagement />} />
           <Route path="/expirationalert" element={<ExpirationAlert />} />
           <Route path="/overstockalert" element={<OverstockAlert />} />
