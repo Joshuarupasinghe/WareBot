@@ -20,7 +20,7 @@ exports.configureWifi = async (req, res) => {
         status: data.status
       });
     } else {
-      res.status(500).json({ message: 'Failed to connect to ESP8266', error: data });
+      res.status(500).json({ message: 'Failed to connect to ESP8266', error: data }); 
     }
   } catch (error) {
     console.error('Error communicating with ESP8266:', error.message);
