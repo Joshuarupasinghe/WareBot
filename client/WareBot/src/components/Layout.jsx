@@ -3,11 +3,12 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineInventory } from "react-icons/md";
-import { FaMapLocationDot } from "react-icons/fa6";
+import { FaUserPlus } from "react-icons/fa6";
 import { GrAnalytics } from "react-icons/gr";
-import { FaTruckLoading } from "react-icons/fa";
+import { FaQrcode } from "react-icons/fa";
 import { IoNotificationsSharp, IoSettingsSharp, IoLogOut, IoChatbubbleEllipses } from "react-icons/io5";
-import { BiTransfer } from "react-icons/bi"; // Added for the Most In and Out Stocks icon
+import { BiTransfer } from "react-icons/bi";
+import { MdQrCode } from "react-icons/md"; // Added for the Most In and Out Stocks icon
 
 const Layout = () => {
   const [activeLink, setActiveLink] = useState(0);
@@ -28,11 +29,10 @@ const Layout = () => {
   };
 
   const handleLogout = () => {
-    // Clear user session (update based on how you're storing it)
-    localStorage.removeItem('user');        // or sessionStorage
-    localStorage.removeItem('token');       // if you store token
-    // Redirect to login page
-    // navigate('/signin'); 
+    
+    localStorage.removeItem('user');       
+    localStorage.removeItem('token');       
+   
   };
 
 
@@ -40,12 +40,11 @@ const Layout = () => {
     { id: 1, path: "/", name: "Dashboard", icon: RiDashboardFill },
     { id: 2, path: "/status&tasks", name: "Robot Status & Tasks", icon: FaTasks },
     { id: 3, path: "/inventory-management", name: "Inventory Management", icon: MdOutlineInventory },
-    { id: 4, path: "/most-in-out-stocks", name: "Most In & Out Stocks", icon: BiTransfer },
-    { id: 5, path: "/order-processing", name: "Order Processing", icon: FaTruckLoading },
-    { id: 6, path: "/warehouse-map", name: "Warehouse Map", icon: FaMapLocationDot },
-    { id: 7, path: "/reports&analytics", name: "Reports & Analytics", icon: GrAnalytics },
-    { id: 8, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
-    { id: 9, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
+    { id: 4, path: "/mostInOut", name: "Most In & Out Stocks", icon: BiTransfer },
+    { id: 5, path: "/addUser", name: "Add Users", icon: FaUserPlus },
+    { id: 6, path: "/Reports_Analytics", name: "Reports & Analytics", icon: GrAnalytics },
+    { id: 7, path: "/alerts&notifications", name: "Alerts & Notifications", icon: IoNotificationsSharp },
+    { id: 8, path: "/settings&configuration", name: "Settings & Configuration", icon: IoSettingsSharp },
   ];
 
   return (
@@ -106,8 +105,13 @@ const Layout = () => {
             {/* Left side - Active Link Name */}
             <h1 className="text-xl font-semibold">{activeLinkName}</h1>
 
-            {/* Right side - Chat Icon & User Avatar */}
+            {/* Right side - QR Icon, Chat Icon & User Avatar */}
             <div className="flex items-center gap-4 mr-16 md:mr-72">
+              <MdQrCode
+                size={26}
+                className="text-[#5FB3F6] cursor-pointer"
+                onClick={() => handleLinkClick(-1, "/qr-tools", "QR Tools")}
+              />
               <IoChatbubbleEllipses size={28} className="text-[#5FB3F6]" />
               <img src="/defaultProfilePic.jpg" alt="avatar" className="w-8 h-8 rounded-full" />
             </div>
