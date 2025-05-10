@@ -4,7 +4,14 @@
   },
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client/WareBot\""
+  },
+  "dependencies": {
+    "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
+    "chart.js": "^4.4.9",
+    "jsonwebtoken": "^9.0.2",
+    "react-chartjs-2": "^5.3.0",
+    "react-gauge-component": "^1.2.64",
+    "react-to-print": "^3.1.0"
   }
-
-
 }

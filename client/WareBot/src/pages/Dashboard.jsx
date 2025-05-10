@@ -11,18 +11,18 @@ const Dashboard = () => {
   return (
     <div className='p-8'>
       <div className='flex gap-10 pb-8'>
-        <div className='w-96'>
+        <div className='w-80'>
           <RobotCurrentTask />
         </div>
-        <div className='w-96'>
+        <div className='w-80'>
           <RobotStatusLive />
         </div>
       </div>
-      <div className='grid grid-cols-7 grid-rows-1 gap-8 pb-8'>
-        <div className='col-span-4'>
+      <div className='grid grid-cols-12 grid-rows-1 gap-8 pb-8'>
+        <div className='col-span-6'>
           <RobotPerformance />
         </div>
-        <div className='col-span-3 col-start-5'>
+        <div className='col-span-6 col-start-7'>
           <StockLevelOverview />
         </div>
       </div>
