@@ -1,28 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { FaTasks } from "react-icons/fa";
 
-const RobotCurrentTask = ({ deviceId }) => {
+const RobotCurrentTask = () => {
     const [task, setTask] = useState("Loading...");
+    const [lastFetchedTask, setLastFetchedTask] = useState(null);
 
     useEffect(() => {
-        const fetchCurrentTask = async () => {
+        const fetchLatestStatus = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/robot/${deviceId}/task`);
+                const res = await fetch("http://localhost:5000/api/robot/robot-status/latest");
                 const data = await res.json();
                 if (res.ok) {
-                    setTask(data.task || "No task");
+                    if (data.status !== lastFetchedTask) {
+                        setTask(data.status || "No task");
+                        setLastFetchedTask(data.status);
+                    }
                 } else {
                     setTask("Error");
                     console.error(data.message || data.error);
                 }
             } catch (error) {
-                console.error("Failed to fetch task:", error.message);  
+                console.error("Failed to fetch status:", error.message);  
                 setTask("Unavailable");
             }
         };
 
-        fetchCurrentTask();
-    }, [deviceId]);
+        fetchLatestStatus();
+
+        const interval = setInterval(fetchLatestStatus, 2000);
+
+        return () => clearInterval(interval);
+    }, [lastFetchedTask]);
 
     return (
         <div>
