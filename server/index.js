@@ -10,6 +10,7 @@ const RobotFetchStatusRoutes = require('./routes/robotStatusRoutes')
 
 const stockRoutes = require('./routes/stockRoutes');
 const { getStockIdCounter } = require('./controllers/stockController'); // Adjust the path if needed
+const robotSendRoutes = require('./routes/robotSendRoute');
 
 
 const app = express();
@@ -29,8 +30,9 @@ app.use('/api', RobotStatusRoutes);
 
 app.use('/api/robot', RobotFetchStatusRoutes);
 
-app.use('/api/stock', stockRoutes);  // ✅ CORRECT
-app.get('/get-counter', getStockIdCounter); // ✅ This is the GET route for fetching StockId
+app.use('/api/stock', stockRoutes);  
+app.get('/get-counter', getStockIdCounter); //  StockId
+app.use('/api', robotSendRoutes);
 
 
 app.get('/', (req, res) => {
