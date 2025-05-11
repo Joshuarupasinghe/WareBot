@@ -7,9 +7,15 @@ const userRoutes = require('./routes/userRoutes');
 const RobotStatusRoutes = require('./routes/taskRoutes');
 const RobotFetchStatusRoutes = require('./routes/robotStatusRoutes');
 const stockRoutes = require('./routes/stockRoutes');
+
+
+const robotSendRoutes = require('./routes/robotSendRoute');
+
+
 const incomingAverageRoutes = require('./routes/incomingAverageRoutes');
 const { getStockIdCounter } = require('./controllers/stockController');
 const { calculateIncomingAverages } = require('./controllers/incomingAverageController');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,9 +32,17 @@ app.use('/api', robotRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', RobotStatusRoutes);
 app.use('/api/robot', RobotFetchStatusRoutes);
+
+
+  
+
+app.use('/api', robotSendRoutes);
+
+
 app.use('/api/stock', stockRoutes);
 app.use('/api/incoming-average', incomingAverageRoutes);  // New route for incoming averages
 app.get('/get-counter', getStockIdCounter);
+
 
 app.get('/', (req, res) => {
   res.send('Backend is running');
