@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const StockMovementComponent = () => {
   const [outgoingCollapsed, setOutgoingCollapsed] = useState(false);
   const [incomingCollapsed, setIncomingCollapsed] = useState(true);
+  const [incomingProducts, setIncomingProducts] = useState([]);
 
-  // Mock data for most outgoing products - updated with numeric lightning and humidity
+  // Mock data for most outgoing products - kept unchanged
   const outgoingProducts = [
     {
       stockId: "65431",
       productNameRoute: {
-        name: "Alpha Smart Sensor",
+        name: "beta Smart Sensor",
         route: "12A"
       },
       batchNo: "23434",
@@ -25,7 +27,7 @@ const StockMovementComponent = () => {
     {
       stockId: "65432",
       productNameRoute: {
-        name: "Omega Lithium Battery",
+        name: "Lithium Battery",
         route: "5C"
       },
       batchNo: "23678",
@@ -88,89 +90,70 @@ const StockMovementComponent = () => {
     }
   ];
 
-  // Mock data for most incoming products 
-  const incomingProducts = [
-    {
-      stockId: "87631",
-      productNameRoute: {
-        name: "Delta Flux Capacitor",
-        route: "9D"
-      },
-      batchNo: "31456",
-      quantity: "18,000",
-      priceLKR: "32,400",
-      category: "Components",
-      temperatureCelsius: "21",
-      weightKg: "1.8",
-      lightning: "95",
-      humidity: "25",
-      averageUsage: "0"
-    },
-    {
-      stockId: "87632",
-      productNameRoute: {
-        name: "Gamma Power Supply",
-        route: "4G"
-      },
-      batchNo: "31785",
-      quantity: "22,000",
-      priceLKR: "45,200",
-      category: "Power",
-      temperatureCelsius: "24",
-      weightKg: "2.4",
-      lightning: "82",
-      humidity: "40",
-      averageUsage: "0"
-    },
-    {
-      stockId: "87633",
-      productNameRoute: {
-        name: "Beta Circuit Controller",
-        route: "6J"
-      },
-      batchNo: "31964",
-      quantity: "14,000",
-      priceLKR: "22,500",
-      category: "Control",
-      temperatureCelsius: "25",
-      weightKg: "0.65",
-      lightning: "72",
-      humidity: "55",
-      averageUsage: "0"
-    },
-    {
-      stockId: "87634",
-      productNameRoute: {
-        name: "Zeta Thermal Module",
-        route: "2H"
-      },
-      batchNo: "32108",
-      quantity: "30,000",
-      priceLKR: "18,900",
-      category: "Thermal",
-      temperatureCelsius: "29",
-      weightKg: "0.95",
-      lightning: "38",
-      humidity: "80",
-      averageUsage: "0"
-    },
-    {
-      stockId: "87635",
-      productNameRoute: {
-        name: "Epsilon Data Hub",
-        route: "8A"
-      },
-      batchNo: "32245",
-      quantity: "26,000",
-      priceLKR: "56,800",
-      category: "Networking",
-      temperatureCelsius: "22",
-      weightKg: "1.5",
-      lightning: "89",
-      humidity: "35",
-      averageUsage: "0"
-    }
-  ];
+  // Fetch incoming average data
+  useEffect(() => {
+    const fetchIncomingAverages = async () => {
+      try {
+        const response = await axios.get('/api/incoming-average/top');
+        const formattedData = response.data.map(item => ({
+          productName: item.productName,
+          incomingAverage: item.incomingAverage,
+          dateTime: new Date(item.dateTime).toLocaleString(),
+          temperature: item.temperature,
+          humidity: item.humidity,
+          lightning: item.lightning
+        }));
+        setIncomingProducts(formattedData);
+      } catch (error) {
+        console.error('Error fetching incoming averages:', error);
+        // Use mock data if API fails
+        setIncomingProducts([
+          {
+            productName: "Delta Flux Capacitor",
+            incomingAverage: 180,
+            dateTime: new Date().toLocaleString(),
+            temperature: "21",
+            humidity: "25",
+            lightning: "95"
+          },
+          {
+            productName: "Gamma Power Supply",
+            incomingAverage: 156,
+            dateTime: new Date().toLocaleString(),
+            temperature: "24",
+            humidity: "40",
+            lightning: "82"
+          },
+          {
+            productName: "Beta Circuit Controller",
+            incomingAverage: 142,
+            dateTime: new Date().toLocaleString(),
+            temperature: "25",
+            humidity: "55",
+            lightning: "72"
+          },
+          {
+            productName: "Zeta Thermal Module",
+            incomingAverage: 128,
+            dateTime: new Date().toLocaleString(),
+            temperature: "29",
+            humidity: "80",
+            lightning: "38"
+          },
+          {
+            productName: "Epsilon Data Hub",
+            incomingAverage: 115,
+            dateTime: new Date().toLocaleString(),
+            temperature: "22",
+            humidity: "35",
+            lightning: "89"
+          }
+        ]);
+      }
+    };
+
+    fetchIncomingAverages();
+  }, []);
 
   return (
     <div className="w-full bg-blue-950 text-white">
@@ -278,28 +261,23 @@ const StockMovementComponent = () => {
           </button>
         </div>
 
-        {/* Incoming Stocks Table */}
+        {/* Incoming Stocks Table - UPDATED */}
         <div className="p-4">
           {!incomingCollapsed && (
             <div className="bg-blue-950 rounded-lg overflow-hidden">
               <div className="px-4 py-3 bg-blue-900/50">
-                <h3 className="text-blue-100 font-medium">Incoming stocks</h3>
+                <h3 className="text-blue-100 font-medium">Incoming stocks (Top 5 Most Frequent)</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-blue-300 border-b border-blue-800">
-                      <th className="px-4 py-2 text-left">Stock ID</th>
-                      <th className="px-4 py-2 text-left">Product Name & Route</th>
-                      <th className="px-4 py-2 text-left">Batch No</th>
-                      <th className="px-4 py-2 text-center">Quantity</th>
-                      <th className="px-4 py-2 text-center">Price (LKR)</th>
-                      <th className="px-4 py-2 text-center">Category</th>
+                      <th className="px-4 py-2 text-left">Product Name</th>
+                      <th className="px-4 py-2 text-center">Incoming Average</th>
+                      <th className="px-4 py-2 text-center">Date & Time</th>
                       <th className="px-4 py-2 text-center">Temperature (Celsius)</th>
-                      <th className="px-4 py-2 text-center">Weight (kg)</th>
+                      <th className="px-4 py-2 text-center">Humidity (%)</th>
                       <th className="px-4 py-2 text-center">Lightning</th>
-                      <th className="px-4 py-2 text-center">Humidity</th>
-                      <th className="px-4 py-2 text-right">Average Usage</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -308,20 +286,12 @@ const StockMovementComponent = () => {
                         key={index}
                         className="border-b border-blue-800/50 hover:bg-blue-900/20"
                       >
-                        <td className="px-4 py-3 text-blue-100">{product.stockId}</td>
-                        <td className="px-4 py-3">
-                          <div className="text-blue-100">{product.productNameRoute.name}</div>
-                          <div className="text-xs text-blue-400">Route {product.productNameRoute.route}</div>
-                        </td>
-                        <td className="px-4 py-3 text-blue-100">{product.batchNo}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.quantity}</td>
-                        <td className="px-4 py-3 text-center text-green-400">{product.priceLKR}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.category}</td>
-                        <td className="px-4 py-3 text-center text-yellow-400">{product.temperatureCelsius}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.weightKg}</td>
-                        <td className="px-4 py-3 text-center text-blue-100">{product.lightning}</td>
+                        <td className="px-4 py-3 text-blue-100">{product.productName}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.incomingAverage}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.dateTime}</td>
+                        <td className="px-4 py-3 text-center text-yellow-400">{product.temperature}</td>
                         <td className="px-4 py-3 text-center text-blue-100">{product.humidity}%</td>
-                        <td className="px-4 py-3 text-right text-blue-100">{product.averageUsage}</td>
+                        <td className="px-4 py-3 text-center text-blue-100">{product.lightning}</td>
                       </tr>
                     ))}
                   </tbody>
