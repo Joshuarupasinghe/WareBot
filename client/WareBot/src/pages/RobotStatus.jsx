@@ -155,7 +155,7 @@ const RobotStatus = () => {
                         <div className='w-auto'>
                             <RobotCurrentTask />
                         </div>
-                        <div className="bg-black/40 rounded-3xl p-4 w-auto">
+                        <div className="bg-black/40 rounded-2xl px-4 py-3 shadow-md w-fit min-w-[360px] gap-4">
                             <p className="text-sm text-gray-300">Next Task</p>
                             <p className="text-lg font-semibold">{nextTask}</p>
                         </div>

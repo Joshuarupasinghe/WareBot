@@ -29,6 +29,16 @@ const addStock = async (req, res) => {
   }
 };
 
+// Get all stocks
+const getStock = async (req, res) => {
+  try {
+    const stocks = await Stock.find({});
+    res.status(200).json(stocks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 // Fetch the current stock ID (without incrementing)
 const getStockIdCounter = async (req, res) => {
   try {
@@ -99,4 +109,4 @@ const getExpiringStocks = async (req, res) => {
   }
 };
 
-module.exports = { addStock, getStockIdCounter, getExpiringStocks };
+module.exports = { addStock, getStock, getStockIdCounter, getExpiringStocks };
