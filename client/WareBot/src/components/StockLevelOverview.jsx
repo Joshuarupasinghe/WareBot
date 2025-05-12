@@ -22,7 +22,6 @@ const StockLevelOverview = () => {
         data: [],
         backgroundColor: ['#FFFFFF'],
         borderWidth: 0,
-        barThickness: 15,
       },
     ],
   });
@@ -52,7 +51,6 @@ const StockLevelOverview = () => {
               data,
               backgroundColor: '#FFFFFF',
               borderWidth: 0,
-              barThickness: 15,
             },
           ],
         });
@@ -120,13 +118,15 @@ const StockLevelOverview = () => {
         beginAtZero: true,
         ticks: {
           color: '#E0E0E0',
-          stepSize: 10000,
+          stepSize: 100,
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
         },
       },
     },
+    barThickness: 'flex',
+    maxBarThickness: 15,
   }
 
   return (
