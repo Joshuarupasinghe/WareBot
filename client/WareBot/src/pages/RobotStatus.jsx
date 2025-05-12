@@ -7,118 +7,115 @@ const RobotStatus = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [nextTask, setNextTask] = useState("Calculating...");
-    const [percentage, setPercentage] = useState(() => {
-        const saved = localStorage.getItem("progressPercentage");
-        return saved ? parseFloat(saved) : 0;
-    });
+    const [percentage, setPercentage] = useState(0);
 
     const intervalRef = useRef(null);
-    const completedTimerRef = useRef(null);
-    const jumpTimerRef = useRef(null);
     const pollingRef = useRef(null);
-    const taskFlowRef = useRef([]);
-    const currentIndexRef = useRef(0);
-    const lastStockIdRef = useRef(null);
-    const lastStatusRef = useRef(null);
-    const maxPercentRef = useRef(0);
-    const showCompletedRef = useRef(false);
+    const transitionTimeoutRef = useRef(null);
+    const lastStatusRef = useRef("");
+    const lastStockIdRef = useRef("");
+    const targetPercentageRef = useRef(0);
+    const startPercentageRef = useRef(0);
 
     const storingFlow = ["Fetching", "Moving to Shelf", "Placing", "Completed"];
     const deliveringFlow = ["Fetching Delivery", "Picking", "Moving to D-Zone", "Completed"];
 
-    const getRandomIncrement = () => Math.random() * (0.5 - 0.2) + 0.2;
-
-    const startProgress = (maxPercent) => {
-        clearInterval(intervalRef.current);
-        intervalRef.current = setInterval(() => {
-            setPercentage(prev => {
-                const next = Math.min(prev + getRandomIncrement(), maxPercent);
-                localStorage.setItem("progressPercentage", next.toFixed(2));
-                if (next >= maxPercent) {
-                    clearInterval(intervalRef.current);
-                }
-                return next;
-            });
-        }, 5000);
+    const getFlow = (status) => {
+        if (storingFlow.includes(status)) return storingFlow;
+        if (deliveringFlow.includes(status)) return deliveringFlow;
+        return [];
+    };
+    const getStoredProgress = (stockId, status) => {
+        const key = `robotProgress-${stockId}-${status}`;
+        const stored = localStorage.getItem(key);
+        return stored ? parseInt(stored, 10) : null;
     };
 
-    const fetchRobotStatus = async () => {
-        // Avoid fetching during 4s display of Completed
-        if (showCompletedRef.current) return;
+    const setStoredProgress = (stockId, status, progress) => {
+        const key = `robotProgress-${stockId}-${status}`;
+        localStorage.setItem(key, progress);
+    };
 
-        try {
-            const response = await fetch('http://localhost:5000/api/robot/robot-status/latest');
-            const data = await response.json();
 
-            if (response.ok) {
-                const currentTask = data.status;
+    const getPercentageRange = (status) => {
+        switch (status) {
+            case "Fetching":
+            case "Fetching Delivery":
+                return [0, 25];
+            case "Moving to Shelf":
+            case "Picking":
+                return [25, 50];
+            case "Placing":
+            case "Moving to D-Zone":
+                return [50, 75];
+            case "Completed":
+                return [75, 100];
+            default:
+                return [0, 0];
+        }
+    };
 
-                let taskFlow = [];
-                if (storingFlow.includes(currentTask)) taskFlow = storingFlow;
-                else if (deliveringFlow.includes(currentTask)) taskFlow = deliveringFlow;
+    const graduallyIncreaseProgress = (start, end, stockId, status) => {
+        clearInterval(intervalRef.current);
+        setPercentage(start);
+        setStoredProgress(stockId, status, start); // store start immediately
 
-                const currentIndex = taskFlow.indexOf(currentTask);
-                const isNewStock = lastStockIdRef.current !== data.stockId;
-                const isNewTask = lastStatusRef.current !== data.status;
-
-                if (isNewStock || isNewTask) {
-                    lastStockIdRef.current = data.stockId;
-                    lastStatusRef.current = data.status;
-                    taskFlowRef.current = taskFlow;
-                    currentIndexRef.current = currentIndex;
-                    const maxPercent = ((currentIndex + 1) / taskFlow.length) * 100;
-                    maxPercentRef.current = maxPercent;
-                    setNextTask(taskFlow[currentIndex + 1] || "Completed");
-
+        intervalRef.current = setInterval(() => {
+            setPercentage(prev => {
+                if (prev < end) {
+                    const updated = prev + 1;
+                    setStoredProgress(stockId, status, updated); // update storage on change
+                    return updated;
+                } else {
                     clearInterval(intervalRef.current);
-                    clearTimeout(completedTimerRef.current);
-                    clearTimeout(jumpTimerRef.current);
 
-                    const initialMap = {
-                        "Fetching": 0,
-                        "Fetching Delivery": 0,
-                        "Moving to Shelf": 25,
-                        "Picking": 25,
-                        "Placing": 50,
-                        "Moving to D-Zone": 50,
-                        "Completed": 75
-                    };
-
-                    const initialPercent = initialMap[currentTask] || 0;
-                    setPercentage(initialPercent);
-                    localStorage.setItem("progressPercentage", initialPercent.toFixed(2));
-
-                    if (currentTask === "Completed") {
-                        showCompletedRef.current = true;
-
-                        // Go from 75% to 100% after 2s
-                        jumpTimerRef.current = setTimeout(() => {
-                            setPercentage(100);
-                            localStorage.setItem("progressPercentage", "100");
-                        }, 2000);
-
-                        // Wait 4s total, then move to next stock
-                        completedTimerRef.current = setTimeout(() => {
-                            showCompletedRef.current = false;
-                            lastStockIdRef.current = null;
-                            lastStatusRef.current = null;
-                            setPercentage(0);
-                            localStorage.removeItem("progressPercentage");
-                            fetchRobotStatus(); // Manual fetch to continue
-                        }, 4000);
-                    } else {
-                        startProgress(maxPercent);
+                    if (end === 75) {
+                        transitionTimeoutRef.current = setTimeout(() => {
+                            graduallyIncreaseProgress(75, 100, stockId, status);
+                        }, 5000);
+                    } else if (end === 100) {
+                        transitionTimeoutRef.current = setTimeout(() => {
+                            fetchRobotStatus(true);
+                        }, 3000);
                     }
 
-                    setStatusData(data);
+                    return prev;
                 }
+            });
+        }, 3000);
+    };
 
-            } else {
-                setError(data.message || 'Error fetching robot status');
+
+    const fetchRobotStatus = async (forceNextStock = false) => {
+        try {
+            const res = await fetch('http://localhost:5000/api/robot/robot-status/latest');
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.message || 'Failed to fetch');
+
+            const isNewStatus = forceNextStock || data.status !== lastStatusRef.current || data.stockId !== lastStockIdRef.current;
+
+            if (isNewStatus) {
+                const flow = getFlow(data.status);
+                const index = flow.indexOf(data.status);
+                const next = flow[index + 1] || "Completed";
+                const [start, target] = getPercentageRange(data.status);
+                const saved = getStoredProgress(data.stockId, data.status);
+                const startFrom = saved !== null && saved < target ? saved : start;
+
+                lastStatusRef.current = data.status;
+                lastStockIdRef.current = data.stockId;
+
+                setStatusData(data);
+                setNextTask(next);
+                targetPercentageRef.current = target;
+                startPercentageRef.current = startFrom;
+
+                graduallyIncreaseProgress(startFrom, target, data.stockId, data.status);
             }
+
         } catch (err) {
-            console.error('Error fetching robot status:', err);
-            setError('Failed to fetch data. Please try again later.');
+            setError(err.message || 'Error occurred');
         } finally {
             setLoading(false);
         }
@@ -126,19 +123,18 @@ const RobotStatus = () => {
 
     useEffect(() => {
         fetchRobotStatus();
-        pollingRef.current = setInterval(fetchRobotStatus, 2000);
+        pollingRef.current = setInterval(fetchRobotStatus, 3000);
 
         return () => {
             clearInterval(pollingRef.current);
             clearInterval(intervalRef.current);
-            clearTimeout(completedTimerRef.current);
-            clearTimeout(jumpTimerRef.current);
+            clearTimeout(transitionTimeoutRef.current);
         };
     }, []);
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
-    if (!statusData) return <div>No status available for robot001.</div>;
+    if (error) return <div className="text-red-500">{error}</div>;
+    if (!statusData) return <div>No status data found.</div>;
 
     return (
         <div className='p-8'>
@@ -152,9 +148,7 @@ const RobotStatus = () => {
 
                 <div className="grid grid-cols-2 gap-4 mt-6 items-start">
                     <div className="space-y-4">
-                        <div className='w-auto'>
-                            <RobotCurrentTask />
-                        </div>
+                        <RobotCurrentTask task={statusData.status} />
                         <div className="bg-black/40 rounded-3xl p-4 w-auto">
                             <p className="text-sm text-gray-300">Next Task</p>
                             <p className="text-lg font-semibold">{nextTask}</p>
@@ -169,15 +163,15 @@ const RobotStatus = () => {
                                     stroke="currentColor"
                                     strokeWidth="2.8"
                                     fill="none"
-                                    strokeDasharray={`${Math.min(percentage, 100)}, 100`}
+                                    strokeDasharray={`${percentage}, 100`}
                                     d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                     a 15.9155 15.9155 0 0 1 0 31.831
+                     a 15.9155 15.9155 0 0 1 0 -31.831"
                                 />
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <p className="text-xs text-gray-300">{statusData.status}</p>
-                                <p className="text-4xl font-bold">{Math.floor(percentage)}%</p>
+                                <p className="text-4xl font-bold">{percentage}%</p>
                                 <p className="text-xs text-gray-400">Total Tasks</p>
                             </div>
                         </div>
