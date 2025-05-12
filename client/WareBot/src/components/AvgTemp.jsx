@@ -1,8 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import GaugeChart from 'react-gauge-component';
 
-const AvgTemp = () => {
-  const temperature = 95;
+const AvgTemp = ({ deviceId }) => {
+  const [temperature, setTemperature] = useState(null);
+
+  useEffect(() => {
+    const fetchTemperature = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/robot001/average-temperature`);
+        const data = await response.json();
+        if (response.ok) {
+          setTemperature(data.averageTemperature);
+        } else {
+          console.error('Failed to fetch temperature:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching temperature:', error);
+      }
+    };
+
+    fetchTemperature();
+
+    // Update every 5 minutes
+    const interval = setInterval(fetchTemperature, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [deviceId]);
 
   return (
     <div>
@@ -15,7 +37,7 @@ const AvgTemp = () => {
         <div className="flex justify-center items-center">
           <GaugeChart
             type='semicircle'
-            value={temperature}
+            value={temperature || 0}
             arc={{
               width: 0.2,
               padding: 0,
@@ -81,7 +103,7 @@ const AvgTemp = () => {
 
         <div className="bg-black/40 p-3 rounded-3xl">
           <div className="mt-2 text-center">
-            <p className="text-3xl font-bold">{temperature}°C</p>
+            <p className="text-3xl font-bold">{temperature !== null ? `${temperature}°C` : 'Loading...'}</p>
             <p className="text-sm text-gray-400">Celsius</p>
           </div>
         </div>
