@@ -29,7 +29,7 @@ const RobotPerformance = () => {
     datasets: [
       {
         label: 'This Week',
-        data: [200, 220, 340, 450, 320, 370, 460],
+        data: [20, 22, 34, 45, 32, 30, 46],
         fill: true,
         backgroundColor: 'rgba(59, 130, 246, 0.3)',
         borderColor: '#2196F3',
@@ -38,7 +38,7 @@ const RobotPerformance = () => {
       },
       {
         label: 'Last Week',
-        data: [500, 160, 270, 230, 180, 110, 140],
+        data: [50, 16, 27, 23, 18, 11, 14],
         fill: true,
         backgroundColor: 'rgba(34, 211, 238, 0.3)',
         borderColor: '#26C6DA',
@@ -53,9 +53,14 @@ const RobotPerformance = () => {
     scales: {
       y: {
         beginAtZero: true,
+        min: 0,
+        max: 100,
         ticks: {
+          callback: function (value) {
+            return value + '%'; 
+          },
           color: 'white',
-          stepSize: 100,
+          stepSize: 20,
         },
         grid: {
           color: 'rgba(255, 255, 255, 0.1)',
@@ -75,7 +80,7 @@ const RobotPerformance = () => {
         display: false,
       },
     },
-  }
+  };
 
   return (
     <div>
