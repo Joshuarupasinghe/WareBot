@@ -1,15 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import MainTable from '../components/MainTable';
 
 const OrderManagementReport = () => {
-    const stockData = [
-        { stockId: '02334', productName: 'Alpha Smart Sensor', route: '12A', batchNo: '23434', purchaseCost: '5,000', orderingCost: '10,000', holdingCost: '3,000', totalInventoryCost: '18,000', category: 'Electrict', economicOrderQuantity: '20',  weight: '200', reOrderQuantity: '2000' },
-        { stockId: '02335', productName: 'Omega Lithium Battery', route: '5C', batchNo: '67452', purchaseCost: '30,000', orderingCost: '50,000', holdingCost: '10,000', totalInventoryCost: '90,000', category: 'Electrict', economicOrderQuantity: '10', weight: '30,000', reOrderQuantity: '1000' },
-        { stockId: '02336', productName: 'Xenon LED Panel', route: '14D', batchNo: '98023', purchaseCost: '4,000', orderingCost: '12,000', holdingCost: '5,000', totalInventoryCost: '21,000', category: 'Electrict', economicOrderQuantity: '40', weight: '50,000', reOrderQuantity: '50' },
-        { stockId: '02337', productName: 'Vertex Cooling Fan', route: '3E', batchNo: '45321', purchaseCost: '40,000', orderingCost: '100,000', holdingCost: '15,000', totalInventoryCost: '155,000', category: 'Electrict', economicOrderQuantity: '20', weight: '200,000', reOrderQuantity: '60' },
-        { stockId: '02338', productName: 'Delta Hydraulic Pump', route: '7F', batchNo: '56234', purchaseCost: '54,000', orderingCost: '500,000', holdingCost: '40,000', totalInventoryCost: '594,000', category: 'Mechanic', economicOrderQuantity: '12', weight: '400,000', reOrderQuantity: '80' },
-        { stockId: '02339', productName: 'Fusion Thermal Insulator', route: '8J', batchNo: '89654', purchaseCost: '60,000', orderingCost: '700,000', holdingCost: '66,000', totalInventoryCost: '826,000', category: 'Mechanic', economicOrderQuantity: '22', weight: '12,000', reOrderQuantity: '500' }
-    ];
+    const [stockData, setStockData] = useState([]);
+
+    useEffect(() => {
+        const fetchStock = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/api/stock');
+                const mappedData = res.data.map(item => {
+                    // Example calculations (adjust based on actual logic)
+                    const purchaseCost = (parseFloat(item.Quantity) * parseFloat(item.Price)) || 0;
+                    const orderingCost = (parseFloat(item.Quantity) * 1000) || 0; // Example fixed ordering cost
+                    const holdingCost = (parseFloat(item.Weight) * 50) || 0; // Example cost based on weight
+                    
+                    // Economic Order Quantity (EOQ) calculation
+                    const demandRate = item.OutgoingStock || 0;  // Example: Outgoing stock could represent annual demand
+                    const orderingCostPerOrder = 1000;  // Example cost to place an order
+                    const holdingCostPerUnit = 50;  // Example holding cost per unit
+
+                    const eoq = Math.sqrt((2 * demandRate * orderingCostPerOrder) / holdingCostPerUnit).toFixed(2);
+
+                    // Reorder Quantity (ROQ) calculation
+                    const leadTime = 2;  // Example lead time (in months or periods)
+                    const reorderQuantity = (demandRate * leadTime) || 0;
+
+                    return {
+                        stockId: item.StockId || '',
+                        productName: item.Name || '',
+                        route: item.RouteNumber || '',
+                        batchNo: item.BatchNumber || '',
+                        purchaseCost: purchaseCost.toFixed(2), // formatted
+                        orderingCost: orderingCost.toFixed(2), // formatted
+                        holdingCost: holdingCost.toFixed(2), // formatted
+                        totalInventoryCost: (purchaseCost + orderingCost + holdingCost).toFixed(2),
+                        category: item.Category || '',
+                        economicOrderQuantity: eoq, // Add EOQ here
+                        weight: item.Weight || '',
+                        reOrderQuantity: reorderQuantity.toFixed(2) // Add ROQ here
+                    };
+                });
+                setStockData(mappedData);
+            } catch (error) {
+                console.error("Failed to fetch stock data", error);
+            }
+        };
+
+        fetchStock();
+    }, []);
 
     const columns = [
         { header: 'STOCK ID', accessor: 'stockId', align: 'left', width: '50px' },
@@ -36,10 +75,8 @@ const OrderManagementReport = () => {
         { header: 'REORDER QUANTITY', accessor: 'reOrderQuantity', align: 'center', width: '38px' },
     ];
 
-    // Calculate the approximate total width of the columns
     const totalColumnWidth = columns.reduce((sum, column) => sum + parseInt(column.width || 100, 10), 0);
 
-    // Custom styles to override the table
     const tableStyles = `
         .custom-table-wrapper th {
             font-size: 0.7rem;
