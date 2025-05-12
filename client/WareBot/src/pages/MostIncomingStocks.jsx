@@ -6,56 +6,62 @@ const MostIncomingStocks = () => {
     const [stockData, setStockData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
-    useEffect(() => {
-        const fetchIncomingAverages = async () => {
-            // Clear any previous errors
-            setError(null);
-            setLoading(true);
+    // Function to fetch data from API
+    const fetchIncomingAverages = async () => {
+        // Clear any previous errors
+        setError(null);
+        setLoading(true);
+        
+        try {
+            // First, trigger a recalculation of averages to get the latest data
+            await axios.post('http://localhost:5000/api/incoming-average/calculate');
             
-            try {
-                // Use direct URL to the backend API
-                const response = await axios.get('http://localhost:5000/api/incoming-average/top');
-                
-                console.log('API Response:', response.data); // Debug the response
-                
-                // Check if the response data is valid
-                if (!response.data) {
-                    throw new Error('No data received from API');
-                }
-                
-                // Make sure we're working with an array
-                const dataArray = Array.isArray(response.data) ? response.data : 
-                                 (response.data.data ? response.data.data : []);
-                
-                // Transform the API data to match the table structure
-                const formattedData = dataArray.map(item => ({
-                    productName: item.productName || 'Unknown Product',
-                    incomingAverage: item.incomingAverage ? item.incomingAverage.toString() : '0',
-                    dateTime: item.dateTime ? new Date(item.dateTime).toLocaleString() : 'N/A',
-                    temperature: item.temperature || 'N/A',
-                    humidity: item.humidity || 'N/A',
-                    lightning: item.lightning || 'N/A'
-                }));
-                
-                setStockData(formattedData);
-            } catch (error) {
-                console.error('Error fetching incoming averages:', error);
-                
-                // More detailed error handling
-                if (error.response) {
-                    console.error('Error data:', error.response.data);
-                    console.error('Error status:', error.response.status);
-                    setError(`Server error: ${error.response.status}`);
-                } else if (error.request) {
-                    console.error('No response received:', error.request);
-                    setError('No response from server. Check backend connection.');
-                } else {
-                    console.error('Error message:', error.message);
-                    setError(`Error: ${error.message}`);
-                }
-                
-                // Fallback to mock data if API fails
+            // Then get the updated top averages
+            const response = await axios.get('http://localhost:5000/api/incoming-average/top');
+            
+            console.log('API Response:', response.data); // Debug the response
+            
+            // Check if the response data is valid
+            if (!response.data) {
+                throw new Error('No data received from API');
+            }
+            
+            // Make sure we're working with an array
+            const dataArray = Array.isArray(response.data) ? response.data : 
+                             (response.data.data ? response.data.data : []);
+            
+            // Transform the API data to match the table structure
+            const formattedData = dataArray.map(item => ({
+                productName: item.productName || 'Unknown Product',
+                incomingAverage: item.incomingAverage ? item.incomingAverage.toString() : '0',
+                dateTime: item.dateTime ? new Date(item.dateTime).toLocaleString() : 'N/A',
+                temperature: item.temperature || 'N/A',
+                humidity: item.humidity || 'N/A',
+                lightning: item.lightning || 'N/A'
+            }));
+            
+            setStockData(formattedData);
+            setLastRefreshed(new Date());
+        } catch (error) {
+            console.error('Error fetching incoming averages:', error);
+            
+            // More detailed error handling
+            if (error.response) {
+                console.error('Error data:', error.response.data);
+                console.error('Error status:', error.response.status);
+                setError(`Server error: ${error.response.status}`);
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+                setError('No response from server. Check backend connection.');
+            } else {
+                console.error('Error message:', error.message);
+                setError(`Error: ${error.message}`);
+            }
+            
+            if (stockData.length === 0) {
+                // Only use mock data if we don't already have data
                 setStockData([
                     {
                         productName: 'Delta Flux Capacitor',
@@ -98,13 +104,29 @@ const MostIncomingStocks = () => {
                         lightning: '89'
                     }
                 ]);
-            } finally {
-                setLoading(false);
             }
-        };
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    // Initial data fetch
+    useEffect(() => {
         fetchIncomingAverages();
+        
+        // Set up auto-refresh interval (every 30 seconds)
+        const intervalId = setInterval(() => {
+            fetchIncomingAverages();
+        }, 30000); // 30 seconds
+        
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
     }, []);
+
+    // Manual refresh function
+    const handleRefresh = () => {
+        fetchIncomingAverages();
+    };
 
     // Define columns based on our new data structure
     const columns = [
@@ -176,6 +198,29 @@ const MostIncomingStocks = () => {
         .custom-table-wrapper table th {
             border-spacing: 4;
         }
+        .refresh-button {
+            background-color: #1e40af;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .refresh-button:hover {
+            background-color: #1e3a8a;
+        }
+        .refresh-info {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .refresh-container {
+            display: flex;
+            align-items: center;
+        }
     `;
 
     return (
@@ -188,6 +233,17 @@ const MostIncomingStocks = () => {
                         <p className="text-sm">Using mock data instead.</p>
                     </div>
                 )}
+                
+                <div className="refresh-container">
+                    <button onClick={handleRefresh} className="refresh-button">
+                        Refresh Data
+                    </button>
+                    <span className="refresh-info">
+                        Last updated: {lastRefreshed.toLocaleTimeString()} 
+                        (Auto-refreshes every 30 seconds)
+                    </span>
+                </div>
+                
                 <MainTable
                     title="Most Incoming Stocks (Top 5 Frequency)"
                     columns={columns}
