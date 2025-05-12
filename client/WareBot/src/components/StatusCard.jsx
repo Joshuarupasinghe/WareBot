@@ -19,7 +19,7 @@ const StatusCard = ({
   const statusColor = statusColorMap[statusKey] || statusColorMap["unknown"];
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-gradient-to-br from-[#0D152B] to-[#0B1223] shadow-md w-fit min-w-[360px] gap-4">
+    <div className="flex items-center justify-between px-4 py-3 rounded-2xl bg-black/40 shadow-md w-fit min-w-[360px] gap-4">
       {/* Left Section */}
       <div className="flex flex-col gap-1">
         <span className="text-sm text-gray-400">{title}</span>

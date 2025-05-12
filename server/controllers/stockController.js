@@ -1,7 +1,7 @@
 const Stock = require("../models/stock");
-const Counter = require("../models/counter"); // Import the Counter model
+const Counter = require("../models/counter");
 
-// Add stock and increment stock ID after saving
+// Add stock and increment stock ID
 const addStock = async (req, res) => {
   try {
     let counter = await Counter.findOne({ name: "stockId" });
@@ -14,12 +14,11 @@ const addStock = async (req, res) => {
 
     const newStock = new Stock({
       ...req.body,
-      StockId: newStockId, // Set the StockId from the counter
+      StockId: newStockId,
     });
 
     await newStock.save();
 
-    // Increment the counter value after the stock has been saved
     await Counter.findOneAndUpdate({ name: "stockId" }, { $inc: { value: 1 } });
 
     res.status(201).json(newStock);
@@ -29,7 +28,16 @@ const addStock = async (req, res) => {
   }
 };
 
-// Fetch the current stock ID (without incrementing)
+const getStock = async (req, res) => {
+  try {
+    const stocks = await Stock.find({});
+    res.status(200).json(stocks);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch stocks." });
+  }
+};
+
+// Get current stock ID
 const getStockIdCounter = async (req, res) => {
   try {
     let counter = await Counter.findOne({ name: "stockId" });
@@ -38,13 +46,28 @@ const getStockIdCounter = async (req, res) => {
       counter = await Counter.create({ name: "stockId", value: 1 });
     }
 
-    res.status(200).json({ StockId: counter.value }); // Return the next StockId
+    res.status(200).json({ StockId: counter.value });
   } catch (error) {
     console.error("Error fetching counter:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
+// Get all stocks
+const getAllStocks = async (req, res) => {
+  try {
+    const stocks = await Stock.find({})
+      .select("StockId Name Quantity ExpiryDate RouteNumber BatchNumber")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(stocks);
+  } catch (error) {
+    console.error("Error fetching stocks:", error);
+    res.status(500).json({ error: "Failed to fetch stocks." });
+  }
+};
+
+// Get expiring stocks
 const getExpiringStocks = async (req, res) => {
   try {
     const today = new Date();
@@ -58,6 +81,7 @@ const getExpiringStocks = async (req, res) => {
     const endOfSecondWeek = new Date(startOfNextWeek);
     endOfSecondWeek.setDate(startOfNextWeek.getDate() + 13); // End of the week after next (14 days total)
     endOfSecondWeek.setHours(23, 59, 59, 999);
+
 
     const range = req.query.range;
 
@@ -88,6 +112,7 @@ const getExpiringStocks = async (req, res) => {
     } else {
       return res.status(400).json({ error: "Invalid range parameter" });
     }
+    
   } catch (error) {
     console.error("Error fetching expiring stocks:", error);
     return res.status(500).json({ error: "Failed to fetch expiring stocks." });
