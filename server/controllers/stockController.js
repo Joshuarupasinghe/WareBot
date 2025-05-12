@@ -82,7 +82,6 @@ const getExpiringStocks = async (req, res) => {
     endOfSecondWeek.setDate(startOfNextWeek.getDate() + 13); // End of the week after next (14 days total)
     endOfSecondWeek.setHours(23, 59, 59, 999);
 
-
     const range = req.query.range;
 
     if (range === "days") {
@@ -112,25 +111,31 @@ const getExpiringStocks = async (req, res) => {
     } else {
       return res.status(400).json({ error: "Invalid range parameter" });
     }
-    
   } catch (error) {
     console.error("Error fetching expiring stocks:", error);
     return res.status(500).json({ error: "Failed to fetch expiring stocks." });
   }
 };
 
+// controllers/stockController.js
 const getStockById = async (req, res) => {
-  console.log("Received request for stock with ID:", req.params.id); // Log the request
-  const stockId = req.params.id;
+  const id = req.params.id;
+
+  if (isNaN(id)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid StockId. Must be a number." });
+  }
+
   try {
-    const stock = await Stock.findOne({ StockId: stockId });
+    const stock = await Stock.findOne({ StockId: Number(id) });
     if (!stock) {
-      return res.status(404).json({ message: "Stock not found" });
+      return res.status(404).json({ error: "Stock not found" });
     }
     res.json(stock);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error fetching stock by ID:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
