@@ -47,56 +47,71 @@ const getStockIdCounter = async (req, res) => {
 
 const getExpiringStocks = async (req, res) => {
   try {
-    const { range } = req.query;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const currentDayOfWeek = today.getDay(); // 0 for Sunday, 1 for Monday, etc.
+    const daysUntilNextMonday = (7 - currentDayOfWeek) % 7;
+    const startOfNextWeek = new Date(today);
+    startOfNextWeek.setDate(today.getDate() + daysUntilNextMonday);
+    startOfNextWeek.setHours(0, 0, 0, 0);
 
-    let start, end;
+    const endOfSecondWeek = new Date(startOfNextWeek);
+    endOfSecondWeek.setDate(startOfNextWeek.getDate() + 13); // End of the week after next (14 days total)
+    endOfSecondWeek.setHours(23, 59, 59, 999);
+
+    const range = req.query.range;
 
     if (range === "days") {
-      // Tomorrow only
-      start = new Date(today);
-      start.setDate(today.getDate() + 1);
+      const threeDaysFromNow = new Date(today);
+      threeDaysFromNow.setDate(today.getDate() + 3);
+      threeDaysFromNow.setHours(23, 59, 59, 999);
 
-      end = new Date(start);
-      end.setHours(23, 59, 59, 999);
+      const stocks = await Stock.find({
+        ExpiryDate: { $gte: today, $lte: threeDaysFromNow },
+      }).select("StockId Name RouteNumber BatchNumber Quantity ExpiryDate");
+      return res.status(200).json(stocks);
     } else if (range === "weeks") {
-      // Next 7 days
-      start = new Date(today);
-      start.setDate(today.getDate() + 1); // Tomorrow
-
-      end = new Date(today);
-      end.setDate(today.getDate() + 7);
-      end.setHours(23, 59, 59, 999);
+      const stocks = await Stock.find({
+        ExpiryDate: { $gte: startOfNextWeek, $lte: endOfSecondWeek },
+      }).select("StockId Name RouteNumber BatchNumber Quantity ExpiryDate");
+      return res.status(200).json(stocks);
     } else if (range === "months") {
-      // Expiring from day 30 to day 60
-      start = new Date(today);
-      start.setDate(today.getDate() + 30);
-      start.setHours(0, 0, 0, 0);
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+      const startOfNextMonth = new Date(currentYear, currentMonth + 1, 1);
+      startOfNextMonth.setHours(0, 0, 0, 0);
 
-      end = new Date(today);
-      end.setDate(today.getDate() + 60);
-      end.setHours(23, 59, 59, 999);
+      const stocks = await Stock.find({
+        ExpiryDate: { $gte: startOfNextMonth },
+      }).select("StockId Name RouteNumber BatchNumber Quantity ExpiryDate");
+      return res.status(200).json(stocks);
     } else {
       return res.status(400).json({ error: "Invalid range parameter" });
     }
-
-    console.log(
-      "Querying ExpiryDate between",
-      start.toISOString(),
-      "and",
-      end.toISOString()
-    );
-
-    const expiringStocks = await Stock.find({
-      ExpiryDate: { $gte: start, $lte: end },
-    }).select("StockId Name RouteNumber BatchNumber Quantity ExpiryDate");
-
-    res.status(200).json(expiringStocks);
   } catch (error) {
     console.error("Error fetching expiring stocks:", error);
-    res.status(500).json({ error: "Failed to fetch expiring stocks." });
+    return res.status(500).json({ error: "Failed to fetch expiring stocks." });
   }
 };
 
-module.exports = { addStock, getStockIdCounter, getExpiringStocks };
+const getStockById = async (req, res) => {
+  console.log("Received request for stock with ID:", req.params.id); // Log the request
+  const stockId = req.params.id;
+  try {
+    const stock = await Stock.findOne({ StockId: stockId });
+    if (!stock) {
+      return res.status(404).json({ message: "Stock not found" });
+    }
+    res.json(stock);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = {
+  addStock,
+  getStockIdCounter,
+  getExpiringStocks,
+  getStockById,
+};
