@@ -70,3 +70,28 @@ exports.getDeviceStatus = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// Get temperature
+exports.getAverageTemperature = async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+    const robot = await Robot.findOne({ deviceId });
+
+    if (!robot) {
+      return res.status(404).json({ message: 'Device not found' });
+    }
+
+    const temperatures = robot.temperatureReadings.map((reading) => reading.value) || [];
+    if (temperatures.length === 0) {
+      return res.status(200).json({ averageTemperature: null });
+    }
+
+    const averageTemperature =
+      temperatures.reduce((sum, temp) => sum + temp, 0) / temperatures.length;
+
+    res.status(200).json({ averageTemperature });
+  } catch (err) {
+    console.error('Error in getAverageTemperature: ', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
