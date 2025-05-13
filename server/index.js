@@ -8,6 +8,7 @@ const RobotStatusRoutes = require('./routes/taskRoutes');
 const RobotFetchStatusRoutes = require('./routes/robotStatusRoutes');
 const stockRoutes = require('./routes/stockRoutes');
 const incomingAverageRoutes = require('./routes/incomingAverageRoutes');
+const performanceReportRoutes = require('./routes/performanceReport'); // New route for performance reports
 const { getStockIdCounter } = require('./controllers/stockController');
 const { calculateIncomingAverages } = require('./controllers/incomingAverageController');
 
@@ -28,6 +29,7 @@ app.use('/api', RobotStatusRoutes);
 app.use('/api/robot', RobotFetchStatusRoutes);
 app.use('/api/stock', stockRoutes);
 app.use('/api/incoming-average', incomingAverageRoutes);  // New route for incoming averages
+app.use('/api', performanceReportRoutes);
 app.get('/get-counter', getStockIdCounter);
 
 app.get('/', (req, res) => {
