@@ -32,18 +32,10 @@ exports.getLatestStatusForRobot001 = async (req, res) => {
 
             if (!isCompleted) {
                 const oldestIncompleteStatus = groupedByStock[stockId][0]; // The first one due to sorting
-                const now = moment().tz('Asia/Colombo');
-                const fetchedAtSL = moment(oldestIncompleteStatus.fetchedAt).tz('Asia/Colombo').format('YYYY-MM-DD HH:mm:ss');
-                const fetchedAt = new Date(oldestIncompleteStatus.fetchedAt);
-                const secondsAgo = Math.floor((now - moment(fetchedAt)) / 1000);
-
                 return res.status(200).json({
                     message: 'Latest status fetched successfully',
                     deviceId: oldestIncompleteStatus.deviceId,
                     stockId: oldestIncompleteStatus.stockId,
-                    status: oldestIncompleteStatus.status,
-                    fetchedAt: fetchedAtSL,
-                    secondsAgo: secondsAgo
                 });
             }
         }
@@ -55,6 +47,38 @@ exports.getLatestStatusForRobot001 = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+
+exports.getLatestDetailForStockId = async (req, res) => {
+    const { stockId } = req.params;
+    const deviceId = 'robot001';
+
+    try {
+        const latestStatus = await RobotStatus.findOne({ deviceId, stockId }).sort({ fetchedAt: -1 });
+
+        if (!latestStatus) {
+            return res.status(404).json({ message: `No status found for deviceId ${deviceId} and stockId ${stockId}` });
+        }
+
+        const now = moment().tz('Asia/Colombo');
+        const fetchedAtSL = moment(latestStatus.fetchedAt).tz('Asia/Colombo').format('YYYY-MM-DD HH:mm:ss');
+        const fetchedAt = new Date(latestStatus.fetchedAt);
+        const secondsAgo = Math.floor((now - moment(fetchedAt)) / 1000);
+
+        return res.status(200).json({
+            message: 'Latest status fetched successfully',
+            deviceId: latestStatus.deviceId,
+            stockId: latestStatus.stockId,
+            status: latestStatus.status,
+            fetchedAt: fetchedAtSL,
+            secondsAgo: secondsAgo
+        });
+
+    } catch (error) {
+        console.error(`Error fetching latest status for stockId ${stockId}:`, error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 
 exports.getPendingStocks = async (req, res) => {
     const deviceId = 'robot001';

@@ -9,6 +9,7 @@ const RobotStatus = () => {
     const [error, setError] = useState(null);
     const [nextTask, setNextTask] = useState("Calculating...");
     const [percentage, setPercentage] = useState(0);
+    const [currentStockId, setCurrentStockId] = useState(null);
 
     const intervalRef = useRef(null);
     const pollingRef = useRef(null);
@@ -84,8 +85,15 @@ const RobotStatus = () => {
 
             if (!res.ok) throw new Error(data.message || 'Failed to fetch');
 
-            const newStatus = data.status;
-            const newStockId = data.stockId;
+            setCurrentStockId(data.stockId);
+
+            const detailedRes = await fetch(`http://localhost:5000/api/robot/robot-status/${data.stockId}/latest-detail`);
+            const detailedData = await detailedRes.json();
+
+            if (!detailedRes.ok) throw new Error(detailedData.message || 'Failed to fetch detailed status');
+
+            const newStatus = detailedData.status;
+            const newStockId = detailedData.stockId;
 
             const isNew = newStatus !== lastStatusRef.current || newStockId !== lastStockIdRef.current;
 
@@ -102,7 +110,7 @@ const RobotStatus = () => {
                 lastStatusRef.current = newStatus;
                 lastStockIdRef.current = newStockId;
 
-                setStatusData(data);
+                setStatusData(detailedData);
                 setNextTask(next);
 
                 graduallyIncreaseProgress(startFrom, target, newStockId, newStatus);
@@ -140,7 +148,7 @@ const RobotStatus = () => {
 
                 <div className="grid grid-cols-2 gap-4 mt-6 items-start">
                     <div className="space-y-4">
-                        <RobotCurrentTask task={statusData.status} />
+                        {statusData && <RobotCurrentTask task={statusData.status} />}
                         <div className="bg-black/40 rounded-3xl p-4 w-auto">
                             <p className="text-sm text-gray-300">Next Task</p>
                             <p className="text-lg font-semibold">{nextTask}</p>
@@ -169,7 +177,7 @@ const RobotStatus = () => {
                 </div>
             </div>
 
-            <PendingStockTable activeStockId={statusData.stockId} />
+            <PendingStockTable activeStockId={currentStockId} />
         </div>
     );
 };
