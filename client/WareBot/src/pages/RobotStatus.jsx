@@ -1,3 +1,4 @@
+// RobotStatus.jsx
 import React, { useEffect, useState, useRef } from 'react';
 import RobotCurrentTask from '../components/RobotCurrentTask';
 import PendingStockTable from '../components/PendingStockTable';
@@ -11,11 +12,8 @@ const RobotStatus = () => {
 
     const intervalRef = useRef(null);
     const pollingRef = useRef(null);
-    const transitionTimeoutRef = useRef(null);
     const lastStatusRef = useRef("");
     const lastStockIdRef = useRef("");
-    const targetPercentageRef = useRef(0);
-    const startPercentageRef = useRef(0);
 
     const storingFlow = ["Fetching", "Moving to Shelf", "Placing", "Completed"];
     const deliveringFlow = ["Fetching Delivery", "Picking", "Moving to D-Zone", "Completed"];
@@ -25,6 +23,7 @@ const RobotStatus = () => {
         if (deliveringFlow.includes(status)) return deliveringFlow;
         return [];
     };
+
     const getStoredProgress = (stockId, status) => {
         const key = `robotProgress-${stockId}-${status}`;
         const stored = localStorage.getItem(key);
@@ -35,7 +34,6 @@ const RobotStatus = () => {
         const key = `robotProgress-${stockId}-${status}`;
         localStorage.setItem(key, progress);
     };
-
 
     const getPercentageRange = (status) => {
         switch (status) {
@@ -58,62 +56,57 @@ const RobotStatus = () => {
     const graduallyIncreaseProgress = (start, end, stockId, status) => {
         clearInterval(intervalRef.current);
         setPercentage(start);
-        setStoredProgress(stockId, status, start); // store start immediately
+        setStoredProgress(stockId, status, start);
 
         intervalRef.current = setInterval(() => {
             setPercentage(prev => {
+                if (lastStatusRef.current !== status || lastStockIdRef.current !== stockId) {
+                    clearInterval(intervalRef.current);
+                    return prev;
+                }
+
                 if (prev < end) {
                     const updated = prev + 1;
-                    setStoredProgress(stockId, status, updated); // update storage on change
+                    setStoredProgress(stockId, status, updated);
                     return updated;
                 } else {
                     clearInterval(intervalRef.current);
-
-                    if (end === 75) {
-                        transitionTimeoutRef.current = setTimeout(() => {
-                            graduallyIncreaseProgress(75, 100, stockId, status);
-                        }, 5000);
-                    } else if (end === 100) {
-                        transitionTimeoutRef.current = setTimeout(() => {
-                            fetchRobotStatus(true);
-                        }, 3000);
-                    }
-
                     return prev;
                 }
             });
-        }, 3000);
+        }, 3000); // progress update interval (in milliseconds)
     };
 
-
-    const fetchRobotStatus = async (forceNextStock = false) => {
+    const fetchRobotStatus = async () => {
         try {
             const res = await fetch('http://localhost:5000/api/robot/robot-status/latest');
             const data = await res.json();
 
             if (!res.ok) throw new Error(data.message || 'Failed to fetch');
 
-            const isNewStatus = forceNextStock || data.status !== lastStatusRef.current || data.stockId !== lastStockIdRef.current;
+            const newStatus = data.status;
+            const newStockId = data.stockId;
 
-            if (isNewStatus) {
-                const flow = getFlow(data.status);
-                const index = flow.indexOf(data.status);
-                const next = flow[index + 1] || "Completed";
-                const [start, target] = getPercentageRange(data.status);
-                const saved = getStoredProgress(data.stockId, data.status);
+            const isNew = newStatus !== lastStatusRef.current || newStockId !== lastStockIdRef.current;
+
+            const flow = getFlow(newStatus);
+            const index = flow.indexOf(newStatus);
+            const next = flow[index + 1] || "Completed";
+
+            const [start, target] = getPercentageRange(newStatus);
+
+            if (isNew) {
+                const saved = getStoredProgress(newStockId, newStatus);
                 const startFrom = saved !== null && saved < target ? saved : start;
 
-                lastStatusRef.current = data.status;
-                lastStockIdRef.current = data.stockId;
+                lastStatusRef.current = newStatus;
+                lastStockIdRef.current = newStockId;
 
                 setStatusData(data);
                 setNextTask(next);
-                targetPercentageRef.current = target;
-                startPercentageRef.current = startFrom;
 
-                graduallyIncreaseProgress(startFrom, target, data.stockId, data.status);
+                graduallyIncreaseProgress(startFrom, target, newStockId, newStatus);
             }
-
         } catch (err) {
             setError(err.message || 'Error occurred');
         } finally {
@@ -128,7 +121,6 @@ const RobotStatus = () => {
         return () => {
             clearInterval(pollingRef.current);
             clearInterval(intervalRef.current);
-            clearTimeout(transitionTimeoutRef.current);
         };
     }, []);
 
@@ -164,9 +156,7 @@ const RobotStatus = () => {
                                     strokeWidth="2.8"
                                     fill="none"
                                     strokeDasharray={`${percentage}, 100`}
-                                    d="M18 2.0845
-                     a 15.9155 15.9155 0 0 1 0 31.831
-                     a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                                 />
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -179,7 +169,7 @@ const RobotStatus = () => {
                 </div>
             </div>
 
-            <PendingStockTable />
+            <PendingStockTable activeStockId={statusData.stockId} />
         </div>
     );
 };
