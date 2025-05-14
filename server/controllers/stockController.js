@@ -1,5 +1,6 @@
 const Stock = require("../models/stock");
 const Counter = require("../models/counter");
+const Order = require("../models/order");
 
 // Add stock and increment stock ID
 const addStock = async (req, res) => {
@@ -132,4 +133,108 @@ const getExpiringStocks = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 module.exports = { addStock, getStockIdCounter, getExpiringStocks };
+=======
+// controllers/stockController.js
+const getStockById = async (req, res) => {
+  const id = req.params.id;
+
+  if (isNaN(id)) {
+    return res
+      .status(400)
+      .json({ error: "Invalid StockId. Must be a number." });
+  }
+
+  try {
+    const stock = await Stock.findOne({ StockId: Number(id) });
+    if (!stock) {
+      return res.status(404).json({ error: "Stock not found" });
+    }
+    res.json(stock);
+  } catch (error) {
+    console.error("Error fetching stock by ID:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get reorder suggestions
+const getReorderSuggestions = async (req, res) => {
+  try {
+    const stocks = await Stock.find({});
+
+    const reorderSuggestionsPromises = stocks.map(async (stock) => {
+      const currentQuantity = parseInt(stock.Quantity) || 0;
+      let maxLeadTime = 0;
+      try {
+        const orders = await Order.find({
+          stockId: stock.StockId,
+          orderDate: { $exists: true },
+          shippingDate: { $exists: true }
+        });
+
+        if (orders && orders.length > 0) {
+          orders.forEach(order => {
+            const leadTime = Math.ceil((order.shippingDate - order.orderDate) / (1000 * 60 * 60 * 24)) || 0;
+            if (leadTime > maxLeadTime) {
+              maxLeadTime = leadTime;
+            }
+          });
+        }
+      } catch (err) {
+        console.log(`No order data found for stock ${stock.StockId}, using mock data`);
+      }
+
+      if (maxLeadTime === 0) {
+        const stockIdNumber = parseInt(stock.StockId.toString().slice(-1)) || 1;
+        maxLeadTime = (stockIdNumber % 7) + 1;
+      }
+
+      const stockIdNumber = parseInt(stock.StockId.toString().slice(-1)) || 1;
+      const maxDailyUsage = Math.ceil(currentQuantity * (0.01 + (stockIdNumber * 0.005)));
+
+      const reorderLevel = maxDailyUsage * maxLeadTime;
+
+      let reOrderLevel = "Low";
+      const ratio = reorderLevel / currentQuantity;
+
+      if (ratio > 0.5) {
+        reOrderLevel = "High";
+      } else if (ratio > 0.2) {
+        reOrderLevel = "Medium";
+      }
+
+      return {
+        stockId: stock.StockId,
+        productName: stock.Name,
+        route: stock.RouteNumber,
+        quantity: stock.Quantity,
+        reOrderLevel,
+        calculatedReorderPoint: reorderLevel,
+        maxDailyUsage,
+        maxLeadTime
+      };
+    });
+
+    const reorderSuggestions = await Promise.all(reorderSuggestionsPromises);
+
+    reorderSuggestions.sort((a, b) => {
+      const priority = { "High": 0, "Medium": 1, "Low": 2 };
+      return priority[a.reOrderLevel] - priority[b.reOrderLevel];
+    });
+
+    res.status(200).json(reorderSuggestions);
+  } catch (error) {
+    console.error("Error calculating reorder suggestions:", error);
+    res.status(500).json({ error: "Failed to calculate reorder suggestions." });
+  }
+};
+
+module.exports = {
+  addStock,
+  getStockIdCounter,
+  getExpiringStocks,
+  getStockById,
+  getReorderSuggestions,
+};
+>>>>>>> 2529cdfe49703cbefcdabad24c284598f54f522c
