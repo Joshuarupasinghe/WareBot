@@ -2,16 +2,14 @@ const express = require("express");
 const { addStock, getStockIdCounter, getExpiringStocks, searchStocks} = require("../controllers/stockController");
 const router = express.Router();
 
-// Add stock endpoint
-router.post("/add", addStock);
-
-// Get the current StockId counter
-router.get("/get-counter", getStockIdCounter);
+router.post('/add', addStock);
+router.get('/get-counter', getStockIdCounter);
 
 // Search stocks by name
 router.get('/search', searchStocks);
+router.get('/expiring', getExpiringStocks);
+// Get stock details by StockId
+router.get("/:id", getStockById);
 
-// Get expiring stocks
-router.get("/expiring", getExpiringStocks);
 
 module.exports = router;
