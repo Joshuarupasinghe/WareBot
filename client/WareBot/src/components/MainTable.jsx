@@ -1,7 +1,12 @@
 import React from 'react';
 
 const MainTable = ({ title, columns, rows, rowLimit }) => {
-  const displayedRows = rowLimit ? rows.slice(0, rowLimit) : rows;
+  // ✅ Safely handle non-array or undefined `rows`
+  const displayedRows = Array.isArray(rows)
+    ? rowLimit
+      ? rows.slice(0, rowLimit)
+      : rows
+    : [];
 
   return (
     <div className="w-full px-8 mb-8 rounded">
@@ -48,6 +53,14 @@ const MainTable = ({ title, columns, rows, rowLimit }) => {
                       {col.render ? col.render(row[col.accessor], row) : row[col.accessor]}
                     </td>
                   ))}
+                  {/* Optional: Handle empty state */}
+              {displayedRows.length === 0 && (
+                <tr>
+                  <td colSpan={columns.length} className="text-center text-gray-400 py-4">
+                    No data available.
+                  </td>
+                </tr>
+              )}
                 </tr>
               ))}
             </tbody>

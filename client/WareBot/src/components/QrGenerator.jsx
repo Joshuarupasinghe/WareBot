@@ -75,7 +75,11 @@ const QRGeneratorPage = () => {
       });
 
       const savedStock = response.data.savedStock || formData;
-      const qrPayload = `StockId: ${savedStock.StockId}\nName: ${savedStock.Name}`;
+      const qrPayload = JSON.stringify({
+  StockId: savedStock.StockId,
+  RouteNumber: savedStock.RouteNumber
+});
+
       setQrData(qrPayload);
 
       setStatusMessage("✅ Stock saved successfully and QR generated!");

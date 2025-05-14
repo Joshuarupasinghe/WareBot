@@ -1,4 +1,3 @@
-// src/pages/StockSearch.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import TextField from '../components/TextField';
@@ -11,41 +10,40 @@ const StockSearch = () => {
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef();
 
+  // Enhanced search with debounce logic
   useEffect(() => {
-    let isMounted = true;
+    const source = axios.CancelToken.source();
     if (!searchTerm.trim()) {
       setSuggestions([]);
       return;
     }
-    const source = axios.CancelToken.source();
-    const timer = setTimeout(async () => {
+
+    const debounceTimeout = setTimeout(async () => {
       try {
         setLoading(true);
         const { data } = await axios.get(
           `/api/stocks/search?name=${encodeURIComponent(searchTerm)}`,
           { cancelToken: source.token }
         );
-        if (isMounted) {
-          setSuggestions(Array.isArray(data) ? data : []);
-          setError('');
-        }
+        setSuggestions(Array.isArray(data) ? data : []);
+        setError('');
       } catch (err) {
-        if (!axios.isCancel(err) && isMounted) {
+        if (!axios.isCancel(err)) {
           console.error('Search error:', err);
           setError('Failed to load suggestions.');
         }
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     }, 300);
 
     return () => {
-      isMounted = false;
       source.cancel();
-      clearTimeout(timer);
+      clearTimeout(debounceTimeout);
     };
   }, [searchTerm]);
 
+  // Close dropdown if click is outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -87,24 +85,28 @@ const StockSearch = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+
         {loading && (
-          <div className="absolute top-full left-0 bg-white/80 p-2 rounded-b-md text-black">Loading...</div>
+          <div className="absolute top-full left-0 bg-[#151D30] p-2 text-white rounded-b-md">Loading...</div>
         )}
+
         {suggestions.length > 0 && (
-          <ul className="absolute top-full left-0 right-0 bg-white/90 border border-gray-200 rounded-md max-h-48 overflow-auto z-10">
+          <ul className="absolute top-full left-0 right-0 bg-[#151D30] border border-gray-500 rounded-md max-h-48 overflow-auto z-10">
             {suggestions.map((s) => (
               <li
                 key={s._id}
-                className="p-2 hover:bg-indigo-100 cursor-pointer text-black"
+                className="p-2 hover:bg-indigo-700 cursor-pointer text-white flex justify-between items-center"
                 onClick={() => handleSelect(s)}
               >
-                {s.Name || 'Unnamed Product'}
+                <span>{s.Name}</span>
+                <span className="text-sm text-gray-400">ID: {s.StockId}</span>
               </li>
             ))}
           </ul>
         )}
+
         {!loading && searchTerm && suggestions.length === 0 && (
-          <div className="absolute top-full left-0 bg-white/80 p-2 rounded-b-md text-black">
+          <div className="absolute top-full left-0 bg-[#151D30] p-2 rounded-b-md text-white">
             No products found.
           </div>
         )}
