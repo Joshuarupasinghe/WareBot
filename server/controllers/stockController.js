@@ -45,6 +45,21 @@ const getStockIdCounter = async (req, res) => {
   }
 };
 
+// Search stocks by name (case-insensitive)
+const searchStocks = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) return res.status(400).json({ message: 'Name query is required.' });
+
+    const regex = new RegExp(name, 'i');
+    const stocks = await Stock.find({ Name: { $regex: regex } }).limit(10);
+    res.status(200).json(stocks);
+  } catch (error) {
+    console.error("Error searching stocks:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const getExpiringStocks = async (req, res) => {
   try {
     const { range } = req.query;
@@ -99,4 +114,4 @@ const getExpiringStocks = async (req, res) => {
   }
 };
 
-module.exports = { addStock, getStockIdCounter, getExpiringStocks };
+module.exports = { addStock, getStockIdCounter, getExpiringStocks, searchStocks };

@@ -29,8 +29,8 @@ app.use('/api', RobotStatusRoutes);
 
 app.use('/api/robot', RobotFetchStatusRoutes);
 
-app.use('/api/stock', stockRoutes);  // ✅ CORRECT
-app.get('/get-counter', getStockIdCounter); // ✅ This is the GET route for fetching StockId
+app.use('/api/stock', stockRoutes);
+app.get('/get-counter', getStockIdCounter);
 
 
 app.get('/', (req, res) => {
