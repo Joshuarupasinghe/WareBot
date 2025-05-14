@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import { FaBox, FaRocket, FaShoppingCart, FaTools } from "react-icons/fa";
 import { Bar } from 'react-chartjs-2'
+import axios from 'axios';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,38 +14,63 @@ import {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 const StockLevelOverview = () => {
-  const data = {
-    labels: [
-      'Category',
-      'Category',
-      'Category',
-      'Category',
-      'Category',
-      'Category',
-      'Category',
-      'Category',
-      'Category'
-    ],
+  const [chartData, setChartData] = useState({
+    labels: [],
     datasets: [
       {
         label: 'Stock Level',
-        data: [
-          330,
-          220,
-          100,
-          300,
-          500,
-          400,
-          450,
-          300,
-          150,
-        ],
+        data: [],
         backgroundColor: ['#FFFFFF'],
         borderWidth: 0,
-        barThickness: 15,
       },
     ],
-  }
+  });
+
+  const [lowStockCount, setLowStockCount] = useState(0);
+  const [expiringSoonCount, setExpiringSoonCount] = useState(0);
+
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/stock/get');
+        const stocks = response.data;
+
+        // Prepare data for the chart
+        const labels = stocks.map(stock => stock.Name);
+        const data = stocks.map(stock => stock.Quantity);
+
+        // Count low stock items (stock < 30)
+        const lowStockItems = stocks.filter(stock => stock.Quantity < 30).length;
+        setLowStockCount(lowStockItems);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Stock Level',
+              data,
+              backgroundColor: '#FFFFFF',
+              borderWidth: 0,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error('Error fetching stock data:', error);
+      }
+    };
+
+    const fetchExpiringSoonCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/stock/expiring?range=weeks');
+        setExpiringSoonCount(response.data.length); // Set the count of expiring soon items
+      } catch (error) {
+        console.error('Error fetching expiring soon items:', error);
+      }
+    };
+
+    fetchStockData();
+    fetchExpiringSoonCount();
+  }, []);
 
   const stats = [
     {
@@ -59,12 +85,12 @@ const StockLevelOverview = () => {
     },
     {
       label: "Low Stock Items",
-      value: "15 Products",
+      value: `${lowStockCount} Products`,
       icon: <FaShoppingCart />,
     },
     {
       label: "Expiring Soon Items",
-      value: "320",
+      value: `${expiringSoonCount} Products`,
       icon: <FaTools />,
     },
   ];
@@ -99,6 +125,8 @@ const StockLevelOverview = () => {
         },
       },
     },
+    barThickness: 'flex',
+    maxBarThickness: 15,
   }
 
   return (
@@ -109,7 +137,7 @@ const StockLevelOverview = () => {
       <div className="bg-black/55 p-4 rounded-3xl shadow-xl">
         <div className='h-52 bg-black/30 p-6 rounded-3xl'>
           <Bar
-            data={data}
+            data={chartData}
             options={options}
             aria-label="Stock Level Overview Chart"
             role="img"
