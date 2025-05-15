@@ -8,7 +8,8 @@ const RobotStatusRoutes = require('./routes/taskRoutes');
 const RobotFetchStatusRoutes = require('./routes/robotStatusRoutes');
 const stockRoutes = require('./routes/stockRoutes');
 const { addStock, getStock, getStockIdCounter, getAllStocks, getExpiringStocks } = require('./controllers/stockController');
-
+const shelfRoutes = require('./routes/shelfRoutes');
+const espRoutes = require('./routes/shelfRoutes');
 
 
 
@@ -34,15 +35,16 @@ app.use('/api', robotRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', RobotStatusRoutes);
 app.use('/api/robot', RobotFetchStatusRoutes);
-
+app.use('/api/shelf', shelfRoutes);
 app.use('/api/stock', stockRoutes);
 app.get('/get-counter', getStockIdCounter);
+app.use('/api', espRoutes);
   
 
 app.use('/api', robotSendRoutes);
 
 
-app.use('/api/stock', stockRoutes);
+// app.use('/api/stock', stockRoutes);
 app.use('/api/incoming-average', incomingAverageRoutes);  // New route for incoming averages
 
 
