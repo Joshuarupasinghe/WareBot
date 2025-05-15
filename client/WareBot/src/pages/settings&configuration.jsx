@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ConnectRobotToWifi from '../components/ConnectRobotToWifi';
 import StatusCard from '../components/StatusCard';
 import { FaRobot } from 'react-icons/fa';
+import ConnectShelfToWifi from '../components/ConnectShelfToWifi';
 
 const SettingsAndConfiguration = () => {
   const [status, setStatus] = useState({ online: null, ip: null, lastHeartbeat: null });
@@ -30,6 +31,7 @@ const SettingsAndConfiguration = () => {
           <ConnectRobotToWifi />
         </div>
       </div>
+      
 
       <div className='w-96'>
         <StatusCard
@@ -50,6 +52,13 @@ const SettingsAndConfiguration = () => {
           ipAddress={status.ip || 'N/A'}
         />
       </div>
+
+      <div className='flex gap-10 pb-8'>
+        <div className='w-96'>
+          <ConnectShelfToWifi />
+        </div>
+      </div>
+      
     </div>
   );
 };

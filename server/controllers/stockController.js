@@ -133,9 +133,6 @@ const getExpiringStocks = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-module.exports = { addStock, getStockIdCounter, getExpiringStocks };
-=======
 // controllers/stockController.js
 const getStockById = async (req, res) => {
   const id = req.params.id;
@@ -237,4 +234,3 @@ module.exports = {
   getStockById,
   getReorderSuggestions,
 };
->>>>>>> 2529cdfe49703cbefcdabad24c284598f54f522c
