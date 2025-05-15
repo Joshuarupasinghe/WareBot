@@ -71,6 +71,39 @@ exports.getDeviceStatus = async (req, res) => {
   }
 };
 
+exports.recordTemperature = async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+    const { value, timestamp } = req.body;
+    if (typeof value !== 'number') {
+      return res.status(400).json({ message: 'Invalid or missing `value`' });
+    }
+
+    const reading = {
+      value,
+      timestamp: timestamp ? new Date(timestamp) : new Date()
+    };
+
+    const robot = await Robot.findOneAndUpdate(
+      { deviceId },
+      { 
+        $push: { temperatureReadings: reading },
+        $set: { lastHeartbeat: new Date() }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!robot) {
+      return res.status(404).json({ message: 'Device not found' });
+    }
+
+    res.status(201).json({ message: 'Reading recorded', reading });
+  } catch (err) {
+    console.error('Error in recordTemperature:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 // Get temperature
 exports.getAverageTemperature = async (req, res) => {
   try {
@@ -93,5 +126,57 @@ exports.getAverageTemperature = async (req, res) => {
   } catch (err) {
     console.error('Error in getAverageTemperature: ', err);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.sendStockToRobot = async (req, res) => {
+  const { stockId, routeNumber } = req.body;
+
+  if (!stockId || !routeNumber) {
+    return res.status(400).json({ message: '❌ Stock ID and Route Number are required.' });
+  }
+
+  try {
+    // 🔍 Find the robot's IP address in the database
+    const robot = await Robot.findOne({ deviceId: 'robot001' });
+
+    if (!robot) {
+      return res.status(404).json({ message: '❌ Robot not found.' });
+    }
+
+    const robotIp = robot.ip;
+
+    if (!robotIp) {
+      return res.status(500).json({ message: '❌ Robot IP address not configured.' });
+    }
+
+    // 🌐 Send data to the robot
+    const response = await fetch(`http://${robotIp}/send-stock`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ stockId, routeNumber }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return res.status(200).json({
+        message: '✅ Stock data sent to robot successfully!',
+        status: data.status,
+      });
+    } else {
+      return res.status(500).json({
+        message: '❌ Failed to send stock data to robot.',
+        error: data,
+      });
+    }
+  } catch (error) {
+    console.error('Error sending stock to robot:', error.message);
+    return res.status(500).json({
+      message: '❌ Error communicating with robot.',
+      error: error.message,
+    });
   }
 };
