@@ -54,6 +54,21 @@ const getStockIdCounter = async (req, res) => {
   }
 };
 
+// Search stocks by name (case-insensitive)
+const searchStocks = async (req, res) => {
+  try {
+    const { name } = req.query;
+    if (!name) return res.status(400).json({ message: 'Name query is required.' });
+
+    const regex = new RegExp(name, 'i');
+    const stocks = await Stock.find({ Name: { $regex: regex } }).limit(10);
+    res.status(200).json(stocks);
+  } catch (error) {
+    console.error("Error searching stocks:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get all stocks
 const getAllStocks = async (req, res) => {
   try {
@@ -118,6 +133,9 @@ const getExpiringStocks = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+module.exports = { addStock, getStockIdCounter, getExpiringStocks };
+=======
 // controllers/stockController.js
 const getStockById = async (req, res) => {
   const id = req.params.id;
@@ -219,3 +237,4 @@ module.exports = {
   getStockById,
   getReorderSuggestions,
 };
+>>>>>>> 2529cdfe49703cbefcdabad24c284598f54f522c

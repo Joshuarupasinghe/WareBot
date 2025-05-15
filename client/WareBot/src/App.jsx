@@ -16,6 +16,7 @@ import InventoryManagement from './pages/InventoryManagement';
 import MostInOutStocks from './pages/MostInOutStocks';
 import Reports_Analytics from './pages/Reports_Analytics';
 // import PrivateRoute from './components/PrivateRoute';
+import StockSearch from './pages/StockSearch';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/stock" element={<StockPage />} />
           <Route path="/mostInOut" element={<MostInOutStocks />} />
           <Route path="/Reports_Analytics" element={<Reports_Analytics />} />
+          <Route path="/deliver" element={<StockSearch />} />
         </Route>
       {/* </Route> */}
 
