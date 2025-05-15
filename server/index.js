@@ -35,6 +35,8 @@ app.use('/api/users', userRoutes);
 app.use('/api', RobotStatusRoutes);
 app.use('/api/robot', RobotFetchStatusRoutes);
 
+app.use('/api/stock', stockRoutes);
+app.get('/get-counter', getStockIdCounter);
   
 
 app.use('/api', robotSendRoutes);

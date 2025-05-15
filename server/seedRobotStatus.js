@@ -15,7 +15,7 @@ mongoose.connect(MONGODB_URI, {
     // Sample seed data
     const sampleData = {
       deviceId: 'robot001',
-      stockId: 'S0005',
+      stockId: '9',
       status: 'Completed',
       fetchedAt: new Date()
     };
